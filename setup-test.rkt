@@ -10,16 +10,18 @@
 
 (test-with-default
   (check-equal? #f (cpus))
-  (check-exn exn:fail? (lambda () (cpus 'not-a-number)))
+  (check-exn exn:fail? (lambda () (cpus 0)))
   (cpus 10)
   (check-equal? 10 (cpus))
+  (check-exn exn:fail? (lambda () (cpus 'not-a-number)))
   (check-exn exn:fail? (lambda() (cpus 12))))
 
 (test-with-default
   (check-equal? #f (tasks))
-  (check-exn exn:fail? (lambda () (tasks 'not-a-number)))
+  (check-exn exn:fail? (lambda () (tasks 0)))
   (tasks 10)
   (check-equal? 10 (tasks))
+  (check-exn exn:fail? (lambda () (tasks 'not-a-number)))
   (check-exn exn:fail? (lambda () (tasks 12))))
 
 (provide test-with-default)

@@ -7,5 +7,6 @@
 (provide
   cpus
   tasks
-  (struct-out cpu))
+  (struct-out cpu)
+  construct-arch)
 
