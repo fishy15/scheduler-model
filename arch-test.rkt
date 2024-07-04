@@ -16,23 +16,25 @@
 (test-with-default
   (cpus 4)
   (check-equal?
-    (group (list (arch-cpu 0) (arch-cpu 1) (arch-cpu 2) (arch-cpu 3)))
+    (arch-group (list (arch-cpu 0) (arch-cpu 1) (arch-cpu 2) (arch-cpu 3)))
     (construct-arch '(0 1 2 3)))
   (check-equal?
-    (group (list (group (list (arch-cpu 0) (arch-cpu 1))) (group (list (arch-cpu 2) (arch-cpu 3)))))
+    (arch-group (list 
+                  (arch-group (list (arch-cpu 0) (arch-cpu 1))) 
+                  (arch-group (list (arch-cpu 2) (arch-cpu 3)))))
     (construct-arch '((0 1) (2 3))))
   (check-equal?
-    (group (list 
-             (group (list (arch-cpu 0)))
-             (group (list (arch-cpu 1)))
-             (group (list (arch-cpu 2)))
-             (group (list (arch-cpu 3)))))
+    (arch-group (list 
+             (arch-group (list (arch-cpu 0)))
+             (arch-group (list (arch-cpu 1)))
+             (arch-group (list (arch-cpu 2)))
+             (arch-group (list (arch-cpu 3)))))
     (construct-arch '((0) (1) (2) (3))))
   (check-equal?
-    (group (list (arch-cpu 0)
-                 (group (list (arch-cpu 1)
-                              (group (list (arch-cpu 2)
-                                           (group (list (arch-cpu 3)))))))))
+    (arch-group (list (arch-cpu 0)
+                 (arch-group (list (arch-cpu 1)
+                              (arch-group (list (arch-cpu 2)
+                                           (arch-group (list (arch-cpu 3)))))))))
     (construct-arch '(0 (1 (2 (3))))))
   (define bad-examples
     (list '(0 1 2)

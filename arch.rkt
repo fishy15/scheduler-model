@@ -23,35 +23,37 @@
        (lambda (obj) 'arch-cpu)
        (lambda (obj) (list (arch-cpu-num obj)))))])
 
-(struct group (children)
+(struct arch-group (children)
   #:guard (lambda (children name)
             (when (null? children)
-              (raise-argument-error 'group "group must not have zero size" children))
+              (raise-argument-error 'arch-group "group must not have zero size" children))
             (for ([child children])
-              (unless (or (arch-cpu? child) (group? child))
-                (raise-argument-error 'group "one of the group children is not a group or cpu" children)))
+              (unless (or (arch-cpu? child) (arch-group? child))
+                (raise-argument-error 'arch-group 
+                                      "one of the group children is not a group or cpu" 
+                                      children)))
             children)
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
-     (equal?-recur (group-children a) (group-children b)))
+     (equal?-recur (arch-group-children a) (arch-group-children b)))
    (define (hash-proc a hash-recur)
-      (hash-recur (group-children a)))
+      (hash-recur (arch-group-children a)))
    (define (hash2-proc a hash2-recur)
-      (hash2-recur (group-children a)))]
+      (hash2-recur (arch-group-children a)))]
   #:methods gen:custom-write
   [(define write-proc
      (make-constructor-style-printer
-       (lambda (obj) 'group)
-       (lambda (obj) (list (group-children obj)))))])
+       (lambda (obj) 'arch-group)
+       (lambda (obj) (list (arch-group-children obj)))))])
 
 (define (check-arch arch)
   ;; gets the list of cpus
   (define (check-arch-recur arch)
     (cond
       [(arch-cpu? arch) (list arch)]
-      [(group? arch)
+      [(arch-group? arch)
         (for/fold ([acc '()])
-                  ([child (group-children arch)]
+                  ([child (arch-group-children arch)]
                    #:break (not acc))
           (let ([child-cpus (check-arch-recur child)])
             (define (member-of-acc v) (member v acc))
@@ -70,7 +72,7 @@
   (define (constr-recur desc)
     (cond
       [(integer? desc) (arch-cpu desc)]
-      [(list? desc) (group (map constr-recur desc))]
+      [(list? desc) (arch-group (map constr-recur desc))]
       [else (raise-argument-error 'construct-arch "type besides int or list present" desc)]))
   (define arch (constr-recur desc))
   (unless (check-arch arch)
