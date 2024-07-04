@@ -5,4 +5,4 @@
 (cpus 10)
 (tasks 10)
 
-(displayln (cpu 3))
+(displayln (arch-cpu 3))
