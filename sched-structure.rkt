@@ -6,7 +6,9 @@
 (struct sched-group (cpus)
   #:guard (lambda (cpus name)
             (unless (set? cpus)
-              (raise-argument-error 'sched-group "list of cpus must be a set" cpus))
+              (raise-argument-error 'sched-group 
+                                    "set?"
+                                    cpus))
             cpus)
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)

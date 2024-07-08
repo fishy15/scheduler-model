@@ -6,9 +6,13 @@
 (struct arch-cpu (num)
   #:guard (lambda (num name)
             (when (equal? #f (cpus))
-              (raise-argument-error 'arch-cpu "number of cpus has not been set" num))
+              (raise-argument-error 'arch-cpu 
+                                    "number of cpus has not been set"
+                                    num))
             (unless (and (<= 0 num) (< num (cpus)))
-              (raise-argument-error 'arch-cpu "cpu number is invalid" num))
+              (raise-argument-error 'arch-cpu
+                                    "cpu number is invalid"
+                                    num))
             num)
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
@@ -26,7 +30,9 @@
 (struct arch-group (children)
   #:guard (lambda (children name)
             (when (null? children)
-              (raise-argument-error 'arch-group "group must not have zero size" children))
+              (raise-argument-error 'arch-group 
+                                    "group must not have zero size"
+                                    children))
             (for ([child children])
               (unless (or (arch-cpu? child) (arch-group? child))
                 (raise-argument-error 'arch-group 
@@ -73,10 +79,14 @@
     (cond
       [(integer? desc) (arch-cpu desc)]
       [(list? desc) (arch-group (map constr-recur desc))]
-      [else (raise-argument-error 'construct-arch "type besides int or list present" desc)]))
+      [else (raise-argument-error 'construct-arch 
+                                  "type besides int or list present" 
+                                  desc)]))
   (define arch (constr-recur desc))
   (unless (check-arch arch)
-    (raise-argument-error 'construct-arch "invalid architecture" desc))
+    (raise-argument-error 'construct-arch 
+                          "invalid architecture"
+                          desc))
   arch)
 
 (provide (all-defined-out))
