@@ -5,8 +5,8 @@
 (require "check.rkt")
 
 (provide
-  cpus
-  tasks
-  (struct-out arch-cpu)
-  construct-arch)
+ cpus
+ tasks
+ (struct-out arch-cpu)
+ construct-arch)
 

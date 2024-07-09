@@ -1,0 +1,13 @@
+# https://github.com/github/gitignore/blob/main/Racket.gitignore
+.DS_Store
+compiled/
+/doc/
+*~
+*.bak
+\#*
+.\#*
+
+# based on https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+.vscode/*
+.history/
+*.vsix
