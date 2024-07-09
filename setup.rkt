@@ -1,7 +1,5 @@
 #lang racket
 
-(provide (all-defined-out))
-
 ;; if no argument given, then returns the number of cpus set, or #f if not set yet
 ;; if an argument given, sets the number of cpus to that
 (define num-cpus #f)
@@ -40,3 +38,7 @@
 (define (reset-state!)
   (set! num-cpus #f)
   (set! num-tasks #f))
+
+(provide cpus
+         tasks
+         reset-state!)
