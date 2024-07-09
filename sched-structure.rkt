@@ -1,14 +1,19 @@
 #lang racket
 
 (require racket/struct
-         "setup.rkt")
+         "arch.rkt")
 
 (struct sched-group (cpus)
   #:guard (lambda (cpus name)
             (unless (set? cpus)
-              (raise-argument-error 'sched-group
+              (raise-argument-error name
                                     "set?"
                                     cpus))
+            (for ([cpu (in-set cpus)])
+              (unless (arch-cpu? cpu)
+                (raise-argument-error name
+                                      "all cpus must be arch-cpu"
+                                      cpus)))
             cpus)
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
@@ -24,13 +29,13 @@
       (lambda (obj) (list (sched-group-cpus obj)))))])
 
 (struct sched-domain (cpu-set groups children)
-  #:guard (lambda (cpu-set groups name)
+  #:guard (lambda (cpu-set groups children name)
             (unless (set? cpu-set)
-              (raise-argument-error 'sched-domain
+              (raise-argument-error name
                                     "set?"
                                     cpu-set))
             (unless (list? groups)
-              (raise-argument-error 'sched-domain
+              (raise-argument-error name
                                     "list?"
                                     groups))
             (for ([cpu (in-set cpu-set)])
@@ -38,11 +43,11 @@
                 (for/or ([group groups])
                   (set-member? (sched-group-cpus group) cpu)))
               (unless present
-                (raise-arguments-error 'sched-domain
+                (raise-arguments-error name
                                        "cpu in cpu set missing from some domain"
                                        "cpu-set" cpu-set
                                        "groups" groups)))
-            (values cpu-set groups))
+            (values cpu-set groups children))
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
      (and (equal?-recur (sched-domain-cpu-set a) (sched-domain-cpu-set b))
@@ -59,9 +64,10 @@
       (lambda (obj) 'sched-domain)
       (lambda (obj) (list (sched-domain-groups obj)))))])
 
-(define (make-sched-domain groups)
-  (define cpu-set (apply set-union (map sched-group-cpus groups)))
-  (sched-domain cpu-set groups))
+(define (make-sched-domain groups [children '()])
+  (define cpu-set
+    (apply set-union (map sched-group-cpus groups)))
+  (sched-domain cpu-set groups children))
 
 (provide
  (struct-out sched-group)

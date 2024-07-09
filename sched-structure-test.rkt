@@ -18,7 +18,12 @@
  (check-exn exn:fail:contract?
             (lambda ()
               (sched-group (list (arch-cpu 0) (arch-cpu 0)))
-              "constructing sched group from list should fail")))
+              "constructing sched group from list should fail"))
+
+ (check-exn exn:fail:contract?
+            (lambda ()
+              (sched-group (set (arch-cpu 0) 1))
+              "constructing sched group from set where not all arch-cpus should fail")))
 
 (test-with-default
  (cpus 4)
@@ -31,5 +36,5 @@
 
  (check-equal?
   domain
-  (sched-domain cpu-set group-list)
+  (sched-domain cpu-set group-list '())
   "sched domain should have correct cpu set and groups"))
