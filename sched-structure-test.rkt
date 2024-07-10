@@ -37,4 +37,12 @@
  (check-equal?
   domain
   (sched-domain cpu-set group-list '())
-  "sched domain should have correct cpu set and groups"))
+  "sched domain should have correct cpu set and groups")
+
+ (check-exn exn:fail:contract?
+            (lambda ()
+              (make-sched-domain (set group1 group2))))
+
+ (check-exn exn:fail:contract?
+            (lambda ()
+              (make-sched-domain (list group1 1)))))

@@ -3,17 +3,27 @@
 (require racket/struct
          "arch.rkt")
 
+(define (check-container-of-type container? container-name type? type-name)
+  (lambda (container arg-desc name)
+    (unless (container? container)
+      (raise-argument-error name
+                            (format "~a must be a ~a" arg-desc container-name)
+                            container))
+    (for ([elem container])
+      (unless (type? elem)
+        (raise-argument-error name
+                              (format "~a must consist of ~as" arg-desc type-name)
+                              container)))))
+
+(define check-set-of-arch-cpus
+  (check-container-of-type set? "set" arch-cpu? "arch-cpu"))
+
+(define (union-group-cpu-sets groups)
+  (apply set-union (map sched-group-cpus groups)))
+
 (struct sched-group (cpus)
   #:guard (lambda (cpus name)
-            (unless (set? cpus)
-              (raise-argument-error name
-                                    "set?"
-                                    cpus))
-            (for ([cpu (in-set cpus)])
-              (unless (arch-cpu? cpu)
-                (raise-argument-error name
-                                      "all cpus must be arch-cpu"
-                                      cpus)))
+            (check-set-of-arch-cpus cpus "first argument" name)
             cpus)
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
@@ -28,25 +38,13 @@
       (lambda (obj) 'sched-group)
       (lambda (obj) (list (sched-group-cpus obj)))))])
 
+(define check-list-of-sched-groups
+  (check-container-of-type list? "list" sched-group? "sched-group"))
+
 (struct sched-domain (cpu-set groups children)
   #:guard (lambda (cpu-set groups children name)
-            (unless (set? cpu-set)
-              (raise-argument-error name
-                                    "set?"
-                                    cpu-set))
-            (unless (list? groups)
-              (raise-argument-error name
-                                    "list?"
-                                    groups))
-            (for ([cpu (in-set cpu-set)])
-              (define present
-                (for/or ([group groups])
-                  (set-member? (sched-group-cpus group) cpu)))
-              (unless present
-                (raise-arguments-error name
-                                       "cpu in cpu set missing from some domain"
-                                       "cpu-set" cpu-set
-                                       "groups" groups)))
+            (check-set-of-arch-cpus cpu-set "first argument" name)
+            (check-list-of-sched-groups groups "second argument" name)
             (values cpu-set groups children))
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
@@ -65,8 +63,7 @@
       (lambda (obj) (list (sched-domain-groups obj)))))])
 
 (define (make-sched-domain groups [children '()])
-  (define cpu-set
-    (apply set-union (map sched-group-cpus groups)))
+  (define cpu-set (union-group-cpu-sets groups))
   (sched-domain cpu-set groups children))
 
 (provide
