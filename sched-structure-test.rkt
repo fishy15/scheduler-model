@@ -45,4 +45,8 @@
 
  (check-exn exn:fail:contract?
             (lambda ()
-              (make-sched-domain (list group1 1)))))
+              (make-sched-domain (list group1 1))))
+
+ (check-exn exn:fail:contract?
+            (lambda ()
+              (make-sched-domain (list group1 group1)))))
