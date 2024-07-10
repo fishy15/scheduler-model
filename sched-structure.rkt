@@ -34,8 +34,8 @@
 
 ;; TODO: implement "The group pointed to by the ->groups pointer MUST contain 
 ;;       "the CPU to which the domain belongs."
-(struct sched-domain (cpu-set groups children)
-  #:guard (lambda (cpu-set groups children name)
+(struct sched-domain (cpu-set groups parent)
+  #:guard (lambda (cpu-set groups parent name)
             (check-set-of-arch-cpus cpu-set "first argument" name)
             (check-list-of-sched-groups groups "second argument" name)
             
@@ -52,29 +52,35 @@
                    (raise-argument-error name
                                          "sched groups should have disjoint cpu sets"
                                          groups))]))
-            (values cpu-set groups children))
+            
+            (unless (or (false? parent) (sched-domain? parent))
+              (raise-argument-error name
+                                    "third argument should be #f or a sched-domain"
+                                    parent))
+
+            (values cpu-set groups parent))
   #:methods gen:equal+hash
   [(define (equal-proc a b equal?-recur)
      (and (equal?-recur (sched-domain-cpu-set a) (sched-domain-cpu-set b))
           (equal?-recur (sched-domain-groups a) (sched-domain-groups b))
-          (equal?-recur (sched-domain-children a) (sched-domain-children b))))
+          (equal?-recur (sched-domain-parent a) (sched-domain-parent b))))
    (define (hash-proc a hash-recur)
      (+ (hash-recur (sched-domain-cpu-set a))
         (hash-recur (sched-domain-groups a))
-        (hash-recur (sched-domain-children a))))
+        (hash-recur (sched-domain-parent a))))
    (define (hash2-proc a hash2-recur)
      (+ (hash2-recur (sched-domain-cpu-set a))
         (* 3 (hash2-recur (sched-domain-groups a)))
-        (* 5 (hash2-recur (sched-domain-children a)))))]
+        (* 5 (hash2-recur (sched-domain-parent a)))))]
   #:methods gen:custom-write
   [(define write-proc
      (make-constructor-style-printer
       (lambda (obj) 'sched-domain)
-      (lambda (obj) (list (sched-domain-groups obj) (sched-domain-children obj)))))])
+      (lambda (obj) (list (sched-domain-groups obj) (sched-domain-parent obj)))))])
 
-(define (make-sched-domain groups [children '()])
+(define (make-sched-domain groups [parent #f])
   (define cpu-set (union-group-cpu-sets groups))
-  (sched-domain cpu-set groups children))
+  (sched-domain cpu-set groups parent))
 
 (provide
  (struct-out sched-group)
