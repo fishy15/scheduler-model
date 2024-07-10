@@ -50,3 +50,37 @@
  (check-exn exn:fail:contract?
             (lambda ()
               (make-sched-domain (list group1 group1)))))
+
+(test-with-default
+ (cpus 4)
+
+ (define arch
+   (construct-arch '((0 1) (2 3))))
+
+ (define global-domain
+   (make-sched-domain
+    (list (make-sched-group 0 1)
+          (make-sched-group 2 3))))
+
+ (define subdomain1
+   (make-sched-domain
+    (list (make-sched-group 0)
+          (make-sched-group 1))
+    global-domain))
+
+ (define subdomain2
+   (make-sched-domain
+    (list (make-sched-group 2)
+          (make-sched-group 3))
+    global-domain))
+
+ (define intended-domains
+   (make-immutable-hash
+    (list (cons (arch-cpu 0) subdomain1)
+          (cons (arch-cpu 1) subdomain1)
+          (cons (arch-cpu 2) subdomain2)
+          (cons (arch-cpu 3) subdomain2))))
+
+ (check-equal?
+  intended-domains
+  (domain-from-arch arch)))

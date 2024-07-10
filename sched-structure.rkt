@@ -29,6 +29,9 @@
       (lambda (obj) 'sched-group)
       (lambda (obj) (list (sched-group-cpus obj)))))])
 
+(define (make-sched-group . cpus-numbers)
+  (sched-group (list->set (map arch-cpu cpus-numbers))))
+
 (define check-list-of-sched-groups
   (check-container-of-type list? "list" sched-group? "sched-group"))
 
@@ -82,7 +85,28 @@
   (define cpu-set (union-group-cpu-sets groups))
   (sched-domain cpu-set groups parent))
 
+;; assume each arch-group becomes a sched-domain, and children are the sched-groups
+;; produces a map of cpu to sched domain hierarchy
+(define (domain-from-arch arch)
+  ;; returns a list of associations
+  (define (domain-from-arch-dfs arch parent)
+    (cond
+      [(arch-cpu? arch) (list (cons arch parent))]
+      [(arch-group? arch)
+       (define groups
+         (for/list ([child (arch-group-children arch)])
+           (sched-group (get-cpu-set child))))
+       (define domain
+         (make-sched-domain groups parent))
+       (define children-domains
+         (for/list ([child (arch-group-children arch)])
+           (domain-from-arch-dfs child domain)))
+       (append* children-domains)]))
+  (make-immutable-hash (domain-from-arch-dfs arch #f)))
+
 (provide
  (struct-out sched-group)
  (struct-out sched-domain)
- make-sched-domain)
+ make-sched-group
+ make-sched-domain
+ domain-from-arch)

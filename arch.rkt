@@ -89,4 +89,11 @@
                           desc))
   arch)
 
+(define (get-cpu-set arch)
+  (cond
+    [(arch-cpu? arch)
+     (set arch)]
+    [(arch-group? arch)
+     (apply set-union (map get-cpu-set (arch-group-children arch)))]))
+
 (provide (all-defined-out))

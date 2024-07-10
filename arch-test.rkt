@@ -60,3 +60,22 @@
    (check-exn exn:fail:contract?
               (lambda () (construct-arch desc))
               (format "constructing invalid arch ~a should fail" desc))))
+
+(test-with-default
+ (cpus 4)
+
+ (check-equal?
+  (apply set (map arch-cpu '(0 1 2 3)))
+  (get-cpu-set (construct-arch '(0 1 2 3))))
+
+ (check-equal?
+  (apply set (map arch-cpu '(0 1 2 3)))
+  (get-cpu-set (construct-arch '((0) (1) (2) (3)))))
+
+ (check-equal?
+  (apply set (map arch-cpu '(0 1 2 3)))
+  (get-cpu-set (construct-arch '((0 1) (2 3)))))
+
+ (check-equal?
+  (apply set (map arch-cpu '(0 3)))
+  (get-cpu-set (arch-group (list (arch-cpu 0) (arch-cpu 3))))))
