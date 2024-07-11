@@ -35,13 +35,11 @@
 (define check-list-of-sched-groups
   (check-container-of-type list? "list" sched-group? "sched-group"))
 
-;; TODO: implement "The group pointed to by the ->groups pointer MUST contain 
-;;       "the CPU to which the domain belongs."
 (struct sched-domain (cpu-set groups parent)
   #:guard (lambda (cpu-set groups parent name)
             (check-set-of-arch-cpus cpu-set "first argument" name)
             (check-list-of-sched-groups groups "second argument" name)
-            
+
             ;; checking that no two groups intersect
             ;; currently SD_OVERLAP is not supported
             (for ([group-pair (unordered-pairs groups)])
@@ -55,7 +53,7 @@
                    (raise-argument-error name
                                          "sched groups should have disjoint cpu sets"
                                          groups))]))
-            
+
             (unless (or (false? parent) (sched-domain? parent))
               (raise-argument-error name
                                     "third argument should be #f or a sched-domain"
@@ -81,9 +79,41 @@
       (lambda (obj) 'sched-domain)
       (lambda (obj) (list (sched-domain-groups obj) (sched-domain-parent obj)))))])
 
-(define (make-sched-domain groups [parent #f])
+(define (make-sched-domain #:parent [parent #f] . groups)
   (define cpu-set (union-group-cpu-sets groups))
   (sched-domain cpu-set groups parent))
+
+;; as mentioned in the documentation, the -> groups pointer must point to the CPU
+;; that this structure has been created for
+;; the groups inputted into this should be correct except for this
+(define (rotate-groups-until-cpu-first base-domain cpu)
+  ;; acc stores the reverse of the prefix that we have already processed
+  (define (rotate-groups groups [acc '()])
+    (match groups
+      ['()
+       (raise-argument-error 'rotate-groups-until-cpu-first
+                             (format "group list is missing cpu ~a" cpu)
+                             base-domain)]
+      [(list head tail ...)
+       (if (set-member? (sched-group-cpus head) cpu)
+           (append groups (reverse acc))
+           (rotate-groups tail (cons head acc)))]))
+
+  (define (fix-domain domain)
+    (if (false? domain)
+        #f
+        (sched-domain
+         (sched-domain-cpu-set domain)
+         (rotate-groups (sched-domain-groups domain))
+         (fix-domain (sched-domain-parent domain)))))
+
+  (fix-domain base-domain))
+
+(define (rotate-all-groups-until-cpu-first unrotated-groups)
+  (for/hash ([key+value (in-hash-pairs unrotated-groups)])
+    (match key+value
+      [(cons cpu base-domain)
+       (values cpu (rotate-groups-until-cpu-first base-domain cpu))])))
 
 ;; assume each arch-group becomes a sched-domain, and children are the sched-groups
 ;; produces a map of cpu to sched domain hierarchy
@@ -97,16 +127,20 @@
          (for/list ([child (arch-group-children arch)])
            (sched-group (get-cpu-set child))))
        (define domain
-         (make-sched-domain groups parent))
+         (apply make-sched-domain groups #:parent parent))
        (define children-domains
          (for/list ([child (arch-group-children arch)])
            (domain-from-arch-dfs child domain)))
        (append* children-domains)]))
-  (make-immutable-hash (domain-from-arch-dfs arch #f)))
+  (define unrotated-groups
+    (make-immutable-hash (domain-from-arch-dfs arch #f)))
+  (rotate-all-groups-until-cpu-first unrotated-groups))
 
 (provide
  (struct-out sched-group)
  (struct-out sched-domain)
  make-sched-group
  make-sched-domain
+ rotate-groups-until-cpu-first
+ rotate-all-groups-until-cpu-first
  domain-from-arch)
