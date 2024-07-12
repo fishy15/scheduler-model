@@ -1,12 +1,12 @@
 #lang racket
 
-(require "setup.rkt")
+(require "setup/main.rkt")
 (require "arch.rkt")
 (require "check.rkt")
 
 (provide
  cpus
- tasks
+ create-task!
  (struct-out arch-cpu)
  construct-arch)
 

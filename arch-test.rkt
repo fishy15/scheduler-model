@@ -2,9 +2,9 @@
 
 (require
   rackunit
-  "setup.rkt"
+  "setup/main.rkt"
   "arch.rkt"
-  (only-in "setup-test.rkt" test-with-default))
+  (only-in "setup/setup-test.rkt" test-with-default))
 
 (test-with-default
  (cpus 10)

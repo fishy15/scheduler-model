@@ -1,16 +1,16 @@
 #lang racket
 
 (require racket/struct
-         "setup.rkt")
+         "setup/cpus.rkt")
 
 (struct arch-cpu (num)
   #:guard (lambda (num name)
             (when (equal? #f (cpus))
-              (raise-argument-error 'arch-cpu
+              (raise-argument-error name
                                     "number of cpus has not been set"
                                     num))
             (unless (and (<= 0 num) (< num (cpus)))
-              (raise-argument-error 'arch-cpu
+              (raise-argument-error name
                                     "cpu number is invalid"
                                     num))
             num)

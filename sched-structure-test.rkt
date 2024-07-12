@@ -4,8 +4,8 @@
   rackunit
   "arch.rkt"
   "sched-structure.rkt"
-  "setup.rkt"
-  (only-in "setup-test.rkt" test-with-default))
+  "setup/main.rkt"
+  (only-in "setup/setup-test.rkt" test-with-default))
 
 (test-with-default
  (cpus 4)
