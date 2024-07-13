@@ -1,7 +1,7 @@
 #lang racket
 
 (require racket/struct
-         "arch.rkt"
+         "arch/main.rkt"
          (only-in "utils.rkt"
                   check-container-of-type
                   unordered-pairs))
@@ -31,6 +31,15 @@
 
 (define (make-sched-group . cpus-numbers)
   (sched-group (list->set (map arch-cpu cpus-numbers))))
+
+;; methods on sched group
+
+(define (sched-group-nr-cpus group)
+  (set-count (sched-group-cpus group)))
+
+(define (sched-group-nr-running group)
+  (for/sum [(cpu (sched-group-cpus group))]
+    (cpu-nr-running cpu)))
 
 (define check-list-of-sched-groups
   (check-container-of-type list? "list" sched-group? "sched-group"))

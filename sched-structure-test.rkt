@@ -2,7 +2,7 @@
 
 (require
   rackunit
-  "arch.rkt"
+  "arch/main.rkt"
   "sched-structure.rkt"
   "setup/main.rkt"
   (only-in "setup/setup-test.rkt" test-with-default))

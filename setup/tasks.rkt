@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../arch.rkt")
+(require "../arch/structs.rkt")
 
 (define task-list '())
 
@@ -36,4 +36,5 @@
 
 (provide (struct-out task)
          create-task!
+         task-list
          reset-task-state!)

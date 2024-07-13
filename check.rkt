@@ -1,7 +1,8 @@
 #lang racket
 
-(define (group-overloaded nr-cpus nr-running group-util group-runnable)
+(define (group-overloaded? nr-cpus nr-running group-util group-runnable)
   ;; not always true since there exist some RT tasks that cannot be disabled
+  ;; these tasks consume some capacity, so the total capacity is
   ;; however we will assume that they have neglible impact
   (define group-capacity (* 1024 nr-cpus))
   ;; reciprocal of 0.85
