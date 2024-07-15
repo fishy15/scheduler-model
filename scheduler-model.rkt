@@ -1,8 +1,7 @@
 #lang racket
 
 (require "setup/main.rkt")
-(require "arch.rkt")
-(require "check.rkt")
+(require "arch/main.rkt")
 
 (provide
  cpus

@@ -6,9 +6,11 @@
                   check-container-of-type
                   unordered-pairs))
 
+;; Check if input is a set of arch-cpus.
 (define check-set-of-arch-cpus
   (check-container-of-type set? "set" arch-cpu? "arch-cpu"))
 
+;; Union of cpu sets
 (define (union-group-cpu-sets groups)
   (apply set-union (map sched-group-cpus groups)))
 
@@ -29,18 +31,23 @@
       (lambda (obj) 'sched-group)
       (lambda (obj) (list (sched-group-cpus obj)))))])
 
+;; Constructs a sched group from a list of numbers. The numbers
+;; correspond to the CPUs present in the group. For example,
+;; (make-sched-group 0 1 2) creates sched group whose cpu set
+;; is (set 0 1 2).
 (define (make-sched-group . cpus-numbers)
   (sched-group (list->set (map arch-cpu cpus-numbers))))
 
-;; methods on sched group
-
+;; Counts the number of CPUs in a group.
 (define (sched-group-nr-cpus group)
   (set-count (sched-group-cpus group)))
 
+;; Counts the number of running tasks in the group.
 (define (sched-group-nr-running group)
   (for/sum [(cpu (sched-group-cpus group))]
     (cpu-nr-running cpu)))
 
+;; Checks if input is a list of scheduler groups.
 (define check-list-of-sched-groups
   (check-container-of-type list? "list" sched-group? "sched-group"))
 
@@ -88,6 +95,8 @@
       (lambda (obj) 'sched-domain)
       (lambda (obj) (list (sched-domain-groups obj) (sched-domain-parent obj)))))])
 
+;; Creates a sched-domain from a list of sched-groups. If a parent
+;; is specified, then the parent represents the parent domain for this domain.
 (define (make-sched-domain #:parent [parent #f] . groups)
   (define cpu-set (union-group-cpu-sets groups))
   (sched-domain cpu-set groups parent))
@@ -118,6 +127,8 @@
 
   (fix-domain base-domain))
 
+;; Calls rotate-groups-until-cpu-first on each entry in the hash table
+;; from arch-cpu to sched-domain.
 (define (rotate-all-groups-until-cpu-first unrotated-groups)
   (for/hash ([key+value (in-hash-pairs unrotated-groups)])
     (match key+value
@@ -126,6 +137,7 @@
 
 ;; assume each arch-group becomes a sched-domain, and children are the sched-groups
 ;; produces a map of cpu to sched domain hierarchy
+;; as mentioned in the
 (define (domain-from-arch arch)
   ;; returns a list of associations
   (define (domain-from-arch-dfs arch parent)
@@ -141,13 +153,17 @@
          (for/list ([child (arch-group-children arch)])
            (domain-from-arch-dfs child domain)))
        (append* children-domains)]))
+  ;; create a table from the associations
   (define unrotated-groups
     (make-immutable-hash (domain-from-arch-dfs arch #f)))
+  ;; rotate them for the reasons provided above
   (rotate-all-groups-until-cpu-first unrotated-groups))
 
 (provide
  (struct-out sched-group)
  (struct-out sched-domain)
+ sched-group-nr-cpus
+ sched-group-nr-running
  make-sched-group
  make-sched-domain
  rotate-groups-until-cpu-first

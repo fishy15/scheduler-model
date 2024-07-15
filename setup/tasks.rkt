@@ -17,6 +17,9 @@
                             running))
     (values cpu running)))
 
+;; Creates a task that start out on the given CPU
+;; and in the given running state. If no running state is given,
+;; it is assumed to be true.
 (define (create-task! #:cpu cpu
                       #:running [running #t])
   (define conv-cpu

@@ -3,9 +3,10 @@
 (require racket/struct
          "../setup/cpus.rkt")
 
+;; Represents a single CPU, represented by its number
 (struct arch-cpu (num)
   #:guard (lambda (num name)
-            (when (equal? #f (cpus))
+            (unless (cpus)
               (raise-argument-error name
                                     "number of cpus has not been set"
                                     num))
@@ -27,6 +28,9 @@
       (lambda (obj) 'arch-cpu)
       (lambda (obj) (list (arch-cpu-num obj)))))])
 
+;; Represents some grouping of CPUs or groups.
+;; For example, both virtual CPUs in SMT situations form a group,
+;; and NUMA groups form a group too.
 (struct arch-group (children)
   #:guard (lambda (children name)
             (when (null? children)
@@ -52,6 +56,8 @@
       (lambda (obj) 'arch-group)
       (lambda (obj) (list (arch-group-children obj)))))])
 
+;; Checks that a constructed architecture has a valid tree structure
+;; and every CPU is accounted for
 (define (check-arch arch)
   ;; gets the list of cpus
   (define (check-arch-recur arch)
@@ -68,12 +74,19 @@
                (append acc child-cpus))))]
       [else #f]))
   (define total-cpus (check-arch-recur arch))
+  ;; Check that every CPU is present from 0 to (cpus) - 1
   (if total-cpus
       (and (member (arch-cpu 0) total-cpus)
            (member (arch-cpu (- (cpus) 1)) total-cpus)
            (equal? (length total-cpus) (cpus)))
       #f))
 
+;; Constructs the architecture from a simpler description
+;; that just uses lists and numbers.
+;; A list represents a group, and a number represents a CPU.
+;; For example, (list (list 0 1) (list 2 3)) represents a two-tiered
+;; architecture where CPUs 0 and 1 are in one group and CPUs 2 and 3
+;; are in the other group.
 (define (construct-arch desc)
   (define (constr-recur desc)
     (cond
@@ -89,6 +102,9 @@
                           desc))
   arch)
 
+;; Returns a set of arch-cpus that are children of the current node
+;; in the archicture. The cpu set of a CPU is the singleton set with itself,
+;; and the cpu set of a group is the union of its children.
 (define (get-cpu-set arch)
   (cond
     [(arch-cpu? arch)
