@@ -7,7 +7,8 @@
   (reset-cpu-state!)
   (reset-task-state!))
 
-(provide cpus
+(provide capacity-per-cpu
+         cpus
          (struct-out task)
          task-list
          create-task!
