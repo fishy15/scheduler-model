@@ -2,7 +2,7 @@
 
 (require rackunit
          json
-         "hidden.rkt")
+         "visible.rkt")
 
 (define single-datapoint
   (with-input-from-file "single.json"

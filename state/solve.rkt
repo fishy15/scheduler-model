@@ -1,12 +1,12 @@
 #lang rosette
 
 (require json
+	 "checker.rkt"
          "hidden.rkt"
-         "visible.rkt"
-         "checker.rkt")
+         "visible.rkt")
 
-(define (solve-case hidden)
-  (let* ([visible (construct-visible-state-var)])
+(define (solve-case visible)
+  (let* ([hidden (construct-hidden-state-var)])
     (define M
       (solve
         (begin
@@ -17,8 +17,8 @@
         #f)))
 
 (define (solve-cases data)
-  (for/or ([hidden data])
-    (solve-case hidden)))
+  (for/or ([visible data])
+    (solve-case visible)))
 
 (define (solve-from-file file-name)
   (with-input-from-file file-name
