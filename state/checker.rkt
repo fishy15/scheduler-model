@@ -7,6 +7,12 @@
 (define (valid hidden visible)
   (only-move-from-nonidle hidden visible))
 
+  
+;; Checks if the load balancer made the correct decision
+(define (correct hidden visible)
+  (right-to-work hidden visible))
+
+;; @fish what the point of this? how is it possible to move from an idle cpu
 (define (only-move-from-nonidle hidden visible)
   ;; Currently only nr-tasks is defined for the visible state,
   ;; so we need to find for which CPUs we know the number of tasks
@@ -21,11 +27,38 @@
           (> (hidden-cpu-nr-tasks (get-cpu-by-id visible src-cpu)) 0))
         #t))
   (andmap check-sd-buf (visible-state-sd-buf visible)))
-  
-;; Checks if the load balancer made the correct decision
-(define (correct hidden visible)
-  (overloaded-to-idle hidden visible))
 
+;; the following functions are "invariants" that the scheduler should always be able to maintain
+
+;; if there are >N tasks, no cpu should be idle
+;; what does this mean from cpu A's perspective
+;; \forall sd, when cpu A runs load balance it cant get any work
+;; ...even though there should be enough tasks for everyone
+;; return false if [theres enough work] and [im idle after all lb iters]
+
+;; i think the way our logging works, we dont see if u were idle before
+;; but it doesnt rly matter, just am i always idle after the steal
+(define (right-to-work hidden visible)
+  (define theres-enough-work (> (total-nr-tasks hidden) (hidden-state-nr-cpus hidden)))
+
+  ;; lb is run per sd
+  ;; foreach sd, check im idle after lb
+  ;; if so return true else return false
+  (define (idle-after-balance-sd sd-buf)
+    (begin
+      (define env (sd-entry-lb-logmsg sd-buf))
+      ;; check if env-idle is CPU_IDLE
+      ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
+      ;; since we want it to not transition right
+      ;; fortunately we get these in string form asw
+      (or (equal? (lb-env-idle env) "CPU_IDLE")
+          (equal? (lb-env-idle env) "CPU_NEWLY_IDLE"))))
+
+  ;; return false if all sd returned true
+  (not (and theres-enough-work
+            (andmap idle-after-balance-sd (visible-state-sd-buf visible)))))
+
+;; sanity two--check that rosette can instantiate variables
 (define (san2 hidden visible)
   (define cpu0 (get-cpu-by-id hidden 0))
   (equal? (hidden-cpu-nr-tasks cpu0) 0))

@@ -12,7 +12,8 @@
          any-cpus-idle?
          get-cpu-by-id
          hidden-state??
-         hidden-cpu??)
+         hidden-cpu??
+         total-nr-tasks)
 
 (struct hidden-cpu
   (cpu-id
@@ -31,13 +32,18 @@
   (= (hidden-cpu-nr-tasks cpu) 0))
 
 (struct hidden-state
-  (cpus)
+  (cpus
+   nr-cpus)
   #:transparent)
 
 ;; Generate a symbolic variable representing a hidden-state
 (define (hidden-state?? nr-cpus)
   (define cpus (map hidden-cpu?? (range nr-cpus)))
-  (hidden-state cpus))
+  (hidden-state cpus nr-cpus))
+
+;; get total task count
+(define (total-nr-tasks state)
+  (foldl (lambda (cpu acc) (+ acc (hidden-cpu-nr-tasks))) 0 (hidden-state-cpus state)))
 
 ;; Checks if any CPU is overloaded
 (define (any-cpus-overloaded? state)
