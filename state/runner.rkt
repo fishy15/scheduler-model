@@ -1,5 +1,7 @@
 #lang racket/base
 
-(require "solve.rkt")
+(require "solve.rkt"
+         "topology.rkt")
 
-(displayln (solve-from-file "single.json"))
+(define topology (construct-topology '(0 1)))
+(displayln (solve-from-file "single.json" topology))

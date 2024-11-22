@@ -1,4 +1,4 @@
-#lang racket/base
+#lang rosette/safe
 
 (require racket/set
          rackunit

@@ -1,10 +1,12 @@
 #lang racket/base
 
-(require racket/set)
+(require racket/set
+	 (only-in racket/base raise-argument-error))
 
 (provide (struct-out topology-cpu)
          (struct-out topology-group)
          construct-topology
+         topology-size
          check-topology
          get-cpu-set)
          
@@ -37,6 +39,10 @@
                           "invalid topology"
                           desc))
   topology)
+
+;; Gets the number of CPUs defined in the topology
+(define (topology-size topology)
+  (set-count (get-cpu-set topology)))
 
 ;; Checks that a constructed topology has a valid tree structure
 ;; and every CPU is accounted for

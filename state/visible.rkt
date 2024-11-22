@@ -1,5 +1,10 @@
 #lang racket/base
 
+(provide (struct-out visible-state)
+         (struct-out sd-entry)
+         (struct-out lb-env)
+         read-from-json)
+
 (struct visible-state
   (cpu
    idle
@@ -91,6 +96,3 @@
     (hash-ref obj 'sched_idle_cpu)
     (for/list ([sd-entry (hash-ref obj 'sd_buf)])
       (read-sd-entry sd-entry))))
-
-(provide (struct-out visible-state)
-         read-from-json)
