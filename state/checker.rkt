@@ -6,11 +6,10 @@
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
   (only-move-from-nonidle hidden visible))
-
   
-;; Checks if the load balancer made the correct decision
-(define (correct hidden visible)
-  (right-to-work hidden visible))
+;; ;; Checks if the load balancer made the correct decision
+;; (define (correct hidden visible)
+;;   (right-to-work hidden visible))
 
 ;; @fish what the point of this? how is it possible to move from an idle cpu
 (define (only-move-from-nonidle hidden visible)
@@ -87,5 +86,5 @@
         (ormap check-sd-buf (visible-state-sd-buf visible)))
       #t))
 
-(provide valid
-         correct)
+(define invariants '(overloaded-to-idle right-to-work))
+(provide valid invariants)
