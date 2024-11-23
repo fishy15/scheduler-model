@@ -5,13 +5,15 @@
 
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
-  (only-move-from-nonidle hidden visible))
-  
-;; ;; Checks if the load balancer made the correct decision
-;; (define (correct hidden visible)
-;;   (right-to-work hidden visible))
+  (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
+       (only-move-from-nonidle hidden visible)))
 
-;; @fish what the point of this? how is it possible to move from an idle cpu
+(define (visible-cpu-nr-tasks-matches-fbq hidden visible)
+  ;; for all cpus visited by fbq, check that
+  ;; the number of tasks we assign to it in hidden matches
+  ;; the number of tasks it actually has in visible
+  #t)
+  
 (define (only-move-from-nonidle hidden visible)
   ;; Currently only nr-tasks is defined for the visible state,
   ;; so we need to find for which CPUs we know the number of tasks
@@ -86,5 +88,5 @@
         (ormap check-sd-buf (visible-state-sd-buf visible)))
       #t))
 
-(define invariants '(overloaded-to-idle right-to-work))
+(define invariants (list overloaded-to-idle right-to-work))
 (provide valid invariants)

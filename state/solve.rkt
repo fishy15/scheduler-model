@@ -10,9 +10,11 @@
   (let ([hidden (construct-hidden-state-var topology)])
     (define M
       (solve
-        (begin
-          (assume (valid hidden visible))
-          (assert (not (invariant hidden visible))))))
+       (begin
+         (displayln "lskdfj")
+         (assume (valid hidden visible))
+         (displayln "llll")
+         (assert (not (invariant hidden visible))))))
     (if (sat? M)
         (evaluate hidden M)
         #f)))

@@ -43,7 +43,7 @@
 
 ;; get total task count
 (define (total-nr-tasks state)
-  (foldl (lambda (cpu acc) (+ acc (hidden-cpu-nr-tasks))) 0 (hidden-state-cpus state)))
+  (foldl (lambda (cpu acc) (+ acc (hidden-cpu-nr-tasks cpu))) 0 (hidden-state-cpus state)))
 
 ;; Checks if any CPU is overloaded
 (define (any-cpus-overloaded? state)
