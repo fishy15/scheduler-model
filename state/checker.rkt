@@ -1,6 +1,6 @@
 #lang rosette/safe
 
-(require "hidden.rkt"
+(require "hidden/main.rkt"
          "visible.rkt")
 
 ;; Checks if the given hidden state could produce the given visible state
@@ -46,14 +46,20 @@
   ;; foreach sd, check im idle after lb
   ;; if so return true else return false
   (define (idle-after-balance-sd sd-buf)
-    (begin
-      (define env (sd-entry-lb-logmsg sd-buf))
-      ;; check if env-idle is CPU_IDLE
-      ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
-      ;; since we want it to not transition right
-      ;; fortunately we get these in string form asw
-      (or (equal? (lb-env-idle env) "CPU_IDLE")
-          (equal? (lb-env-idle env) "CPU_NEWLY_IDLE"))))
+    (define env (sd-entry-lb-logmsg sd-buf))
+    (when env
+      (displayln "hey"))
+    (if env
+        (begin
+          (displayln env)
+          ;; check if env-idle is CPU_IDLE
+          ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
+          ;; since we want it to not transition right
+          ;; fortunately we get these in string form asw
+          (displayln (lb-env-idle env))
+          (or (equal? (lb-env-idle env) "CPU_IDLE")
+              (equal? (lb-env-idle env) "CPU_NEWLY_IDLE")))
+        #f))
 
   ;; return false if all sd returned true
   (not (and theres-enough-work

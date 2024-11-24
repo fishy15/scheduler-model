@@ -2,7 +2,7 @@
 
 (require json
          "checker.rkt"
-         "hidden.rkt"
+         "hidden/main.rkt"
          "visible.rkt"
          (only-in racket/base with-input-from-file))
 
@@ -11,9 +11,7 @@
     (define M
       (solve
        (begin
-         (displayln "lskdfj")
          (assume (valid hidden visible))
-         (displayln "llll")
          (assert (not (invariant hidden visible))))))
     (if (sat? M)
         (evaluate hidden M)

@@ -1,35 +1,19 @@
-#lang rosette/safe
+#lang racket
 
-(require (only-in racket/list range)
-         "topology.rkt")
+(require "cpu.rkt"
+         "../topology.rkt"
+         (only-in racket/list range))
 
-(provide (struct-out hidden-cpu)
-         (struct-out hidden-state)
-         construct-hidden-state-var
-         hidden-cpu-overloaded?
-         hidden-cpu-idle?
+(module+ test
+  (require rackunit
+           rackunit/text-ui))
+
+(provide (struct-out hidden-state)
+         total-nr-tasks
          any-cpus-overloaded?
          any-cpus-idle?
          get-cpu-by-id
-         hidden-state??
-         hidden-cpu??
-         total-nr-tasks)
-
-(struct hidden-cpu
-  (cpu-id
-   nr-tasks)
-  #:transparent)
-
-;; Generate a symbolic variable representing a hidden-cpu
-(define (hidden-cpu?? cpu-id)
-  (define-symbolic* nr-tasks integer?)
-  (hidden-cpu cpu-id nr-tasks))
-
-(define (hidden-cpu-overloaded? cpu)
-  (> (hidden-cpu-nr-tasks cpu) 1))
-
-(define (hidden-cpu-idle? cpu)
-  (= (hidden-cpu-nr-tasks cpu) 0))
+         construct-hidden-state-var)
 
 (struct hidden-state
   (cpus
@@ -66,6 +50,23 @@
        (car cpu-list)]
        [else (rec (cdr cpu-list))]))
   (rec cpus))
+
+(module+ test
+  (run-tests
+   (test-suite
+    "get-cpu-by-id"
+    (test-case
+      "check retrieving a value in the list"
+      (let* [(cpu0 (hidden-cpu 0 0))
+             (cpu1 (hidden-cpu 1 1))
+             (hidden (hidden-state (list cpu0 cpu1) 2))]
+        (check-equal? cpu0 (get-cpu-by-id hidden 0))))
+    (test-case
+      "check if ID of a symbolic hidden-cpu is correct"
+      (let* [(hidden (hidden-state?? 2))
+             (found-cpu (get-cpu-by-id hidden 0))]
+         (check-pred hidden-cpu? found-cpu)
+         (check-equal? 0 (hidden-cpu-cpu-id found-cpu)))))))
 
 ;; Given a topology, constructs a symbolic variable representing
 ;; its hidden state
