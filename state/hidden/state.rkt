@@ -1,4 +1,4 @@
-#lang racket
+#lang rosette/safe
 
 (require "cpu.rkt"
          "../topology.rkt"

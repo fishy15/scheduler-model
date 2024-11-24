@@ -3,6 +3,8 @@
 (require "hidden/main.rkt"
          "visible.rkt")
 
+(provide valid invariants)
+
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
   (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
@@ -25,7 +27,7 @@
     (if env
         (begin
           (define src-cpu (lb-env-src-cpu env))
-          (> (hidden-cpu-nr-tasks (get-cpu-by-id visible src-cpu)) 0))
+          (> (hidden-cpu-nr-tasks (get-cpu-by-id hidden src-cpu)) 0))
         #t))
   (andmap check-sd-buf (visible-state-sd-buf visible)))
 
@@ -47,16 +49,12 @@
   ;; if so return true else return false
   (define (idle-after-balance-sd sd-buf)
     (define env (sd-entry-lb-logmsg sd-buf))
-    (when env
-      (displayln "hey"))
     (if env
         (begin
-          (displayln env)
           ;; check if env-idle is CPU_IDLE
           ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
           ;; since we want it to not transition right
           ;; fortunately we get these in string form asw
-          (displayln (lb-env-idle env))
           (or (equal? (lb-env-idle env) "CPU_IDLE")
               (equal? (lb-env-idle env) "CPU_NEWLY_IDLE")))
         #f))
@@ -95,4 +93,3 @@
       #t))
 
 (define invariants (list overloaded-to-idle right-to-work))
-(provide valid invariants)

@@ -4,7 +4,8 @@
          "checker.rkt"
          "hidden/main.rkt"
          "visible.rkt"
-         (only-in racket/base with-input-from-file))
+         (only-in racket/base with-input-from-file
+                  for/or))
 
 (define (solve-case visible topology invariant)
   (let ([hidden (construct-hidden-state-var topology)])
@@ -18,16 +19,8 @@
         #f)))
 
 (define (solve-cases data topology invariant)
-  (define (rec data-left)
-    (if (null? data-left)
-        #f
-        (begin
-          (define cur-example (read-from-json (car data-left)))
-          (define counterexample (solve-case cur-example topology invariant))
-          (if counterexample
-              counterexample
-              (rec (cdr data-left))))))
-  (rec data))
+  (for/or ([ex-json data])
+    (solve-case (read-from-json ex-json) topology invariant)))
 
 (define (solve-from-file file-name topology invariant)
   (with-input-from-file file-name
