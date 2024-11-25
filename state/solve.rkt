@@ -1,7 +1,7 @@
 #lang rosette/safe
 
 (require json
-         "checker.rkt"
+         "checker/main.rkt"
          "hidden/main.rkt"
          "visible.rkt"
          (only-in racket/base with-input-from-file
