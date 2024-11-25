@@ -3,7 +3,7 @@
 (require json
          "checker/main.rkt"
          "hidden/main.rkt"
-         "visible.rkt"
+         "visible/main.rkt"
          (only-in racket/base with-input-from-file
                   for/or))
 

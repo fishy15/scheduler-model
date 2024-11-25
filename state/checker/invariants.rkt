@@ -1,7 +1,7 @@
 #lang rosette/safe
 
 (require "../hidden/main.rkt"
-         "../visible.rkt")
+         "../visible/main.rkt")
 
 (provide invariants)
 

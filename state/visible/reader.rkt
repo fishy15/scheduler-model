@@ -1,45 +1,12 @@
 #lang racket/base
 
-(provide (struct-out visible-state)
-         (struct-out sd-entry)
-         (struct-out lb-env)
-         read-from-json)
+(require "state.rkt")
 
-(struct visible-state
-  (cpu
-   idle
-   sched-idle-cpu
-   sd-buf)
-  #:transparent)
+(module+ test
+  (require rackunit
+           json))
 
-(struct sd-entry
-  (max-newidle-lb-cost
-   continue-balancing
-   interval
-   need-serialize
-   lb-logmsg
-   new-idle
-   new-busy)
-  #:transparent)
-
-(struct lb-env
-  (sd
-   src-rq
-   src-cpu
-   dst-cpu
-   dst-rq
-   dst-grpmask
-   new-dst-cpu
-   idle
-   imbalance
-   cpus
-   flags
-   loop
-   loop-break
-   loop-max
-   fbq-type
-   migration-type)
-  #:transparent)
+(provide read-from-json)
 
 (define (read-sd sd)
   sd)
@@ -96,3 +63,11 @@
     (hash-ref obj 'sched_idle_cpu)
     (for/list ([sd-entry (hash-ref obj 'sd_buf)])
       (read-sd-entry sd-entry))))
+
+(module+ test
+  (define single-datapoint
+    (with-input-from-file "single.json"
+      (lambda ()
+        (list-ref (read-json) 0))))
+  (displayln (read-from-json single-datapoint)))
+
