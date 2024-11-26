@@ -5,7 +5,7 @@
          "hidden/main.rkt"
          "visible/main.rkt"
          (only-in racket/base with-input-from-file
-                  for/or))
+                              for/or))
 
 (define (solve-case visible topology invariant)
   (let ([hidden (construct-hidden-state-var topology)])
@@ -15,7 +15,7 @@
          (assume (valid hidden visible))
          (assert (not (invariant hidden visible))))))
     (if (sat? M)
-        (evaluate hidden M)
+        (cons (evaluate hidden M) visible)
         #f)))
 
 (define (solve-cases data topology invariant)
