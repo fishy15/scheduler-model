@@ -76,4 +76,8 @@
   (implies (and any-overloaded any-idle)
            moves-overloaded-to-idle))
 
-(define invariants (list overloaded-to-idle right-to-work))
+(define (all-invariants hidden visible)
+  (and (overloaded-to-idle hidden visible)
+       (right-to-work hidden visible)))
+
+(define invariants (list overloaded-to-idle right-to-work all-invariants))
