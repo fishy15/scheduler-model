@@ -14,6 +14,7 @@
   ;; for all cpus visited by fbq, check that
   ;; the number of tasks we assign to it in hidden matches
   ;; the number of tasks it actually has in visible
+  
   #t)
   
 (define (only-move-from-nonidle hidden visible)

@@ -1,11 +1,13 @@
 #lang racket/base
 
 (require racket/match
+         racket/cmdline
          "solve.rkt"
          "checker/main.rkt"
          "topology.rkt")
 
-(define file "many-16-tiered.json")
+(define file (vector-ref (current-command-line-arguments) 0))
+(println file)
 (define topology (construct-topology '((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15))))
 ;; (define topology (construct-topology '(0 1)))
 
