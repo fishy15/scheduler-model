@@ -1,7 +1,5 @@
 #lang rosette/safe
 
-(require "../util/kw-struct.rkt")
-
 (module+ test
   (require rackunit
            rackunit/text-ui))
