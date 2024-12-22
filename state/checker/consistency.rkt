@@ -9,7 +9,10 @@
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
   (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
-       (only-move-from-nonidle hidden visible)))
+       (only-move-from-nonidle hidden visible)
+       (non-negative-tasks hidden)
+       (non-negative-load hidden)
+       (tasks-iff-positive-load hidden)))
 
 (define (visible-cpu-nr-tasks-matches-fbq hidden visible)
   ;; for all cpus visited by fbq, check that
@@ -42,3 +45,23 @@
           (> (hidden-cpu-nr-tasks (get-cpu-by-id hidden src-cpu)) 0))
         #t))
   (andmap check-sd-buf (visible-state-sd-buf visible)))
+
+;; Number of tasks on each core is non-negative
+(define (non-negative-tasks hidden)
+  (andmap (lambda (cpu)
+            (>= (hidden-cpu-nr-tasks cpu) 0))
+          (hidden-state-cpus hidden)))
+
+;; Number of tasks on each core is non-negative
+(define (non-negative-load hidden)
+  (andmap (lambda (cpu)
+            (>= (hidden-cpu-cpu-load cpu) 0))
+          (hidden-state-cpus hidden)))
+
+;; If we have some number of tasks, then we must have non-zero load.
+;; Similarly, if we have no tasks, then we have 0 load.
+(define (tasks-iff-positive-load hidden)
+  (andmap (lambda (cpu)
+            (equal? (> (hidden-cpu-nr-tasks cpu) 0)
+                    (> (hidden-cpu-cpu-load cpu) 0)))
+          (hidden-state-cpus hidden)))
