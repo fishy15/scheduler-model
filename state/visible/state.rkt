@@ -1,5 +1,7 @@
 #lang racket/base
 
+(require "../util/kw-struct.rkt")
+
 (provide (struct-out visible-state)
          (struct-out sd-entry)
          (struct-out lb-logmsg)
@@ -11,31 +13,28 @@
          (struct-out fbg-stat)
          (struct-out fbq-per-cpu-logmsg))
 
-(struct visible-state
+(define-kw-struct visible-state
   (cpu
    idle
    sched-idle-cpu
-   sd-buf)
-  #:transparent)
+   sd-buf))
 
-(struct sd-entry
+(define-kw-struct sd-entry
   (max-newidle-lb-cost
    continue-balancing
    interval
    need-serialize
    lb-logmsg
    new-idle
-   new-busy)
-  #:transparent)
+   new-busy))
 
-(struct lb-logmsg
+(define-kw-struct lb-logmsg
   (lb-env
    swb-logmsg
    fbg-logmsg
-   fbq-logmsg)
-  #:transparent)
+   fbq-logmsg))
 
-(struct lb-env
+(define-kw-struct lb-env
   (sd
    src-rq
    src-cpu
@@ -51,10 +50,9 @@
    loop-break
    loop-max
    fbq-type
-   migration-type)
-  #:transparent)
+   migration-type))
 
-(struct swb-logmsg
+(define-kw-struct swb-logmsg
   (swb-cpus
    dst-cpu
    cpus
@@ -63,16 +61,14 @@
    dst-ttwu-pending
    per-cpu-msgs
    group-balance-mask-sg
-   group-balance-cpu-sg)
-  #:transparent)
+   group-balance-cpu-sg))
 
-(struct swb-per-cpu-logmsg
+(define-kw-struct swb-per-cpu-logmsg
   (cpu-id
    idle-cpu
-   is-core-idle-cpu)
-  #:transparent)
+   is-core-idle-cpu))
 
-(struct fbg-logmsg
+(define-kw-struct fbg-logmsg
   (sd-total-load
    sd-total-capacity
    sd-avg-load
@@ -82,10 +78,9 @@
    sched-energy-enabled
    rd-perf-domain-exists
    rd-overutilized
-   env-imbalanced)
-  #:transparent)
+   env-imbalanced))
 
-(struct fbg-stat
+(define-kw-struct fbg-stat
   (avg-load
    group-load
    group-capacity
@@ -98,17 +93,15 @@
    group-type
    group-asym-packing
    group-smt-balance
-   group-misfit-task-load)
-  #:transparent)
+   group-misfit-task-load))
 
-(struct fbq-logmsg
+(define-kw-struct fbq-logmsg
   (capacity-dst-cpu
    sched-smt-active
    arch-asym-cpu-priority-dst-cpu
-   per-cpu-msgs)
-  #:transparent)
+   per-cpu-msgs))
 
-(struct fbq-per-cpu-logmsg
+(define-kw-struct fbq-per-cpu-logmsg
   (cpu-id
    rq-type
    rq-cfs-h-nr-running
@@ -120,5 +113,4 @@
    arch-scale-cpu-capacity
    sd-imbalance-pct
    cpu-util-cfs-boost
-   rq-misfit-task-load)
-  #:transparent)
+   rq-misfit-task-load))

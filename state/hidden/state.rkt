@@ -48,7 +48,7 @@
       [(null? cpu-list) #f]
       [(equal? (hidden-cpu-cpu-id (car cpu-list)) id)
        (car cpu-list)]
-       [else (rec (cdr cpu-list))]))
+      [else (rec (cdr cpu-list))]))
   (rec cpus))
 
 (module+ test
@@ -56,17 +56,17 @@
    (test-suite
     "get-cpu-by-id"
     (test-case
-      "check retrieving a value in the list"
-      (let* [(cpu0 (hidden-cpu 0 0))
-             (cpu1 (hidden-cpu 1 1))
-             (hidden (hidden-state (list cpu0 cpu1) 2))]
-        (check-equal? cpu0 (get-cpu-by-id hidden 0))))
+     "check retrieving a value in the list"
+     (let* [(cpu0 (hidden-cpu 0 0))
+            (cpu1 (hidden-cpu 1 1))
+            (hidden (hidden-state (list cpu0 cpu1) 2))]
+       (check-equal? cpu0 (get-cpu-by-id hidden 0))))
     (test-case
-      "check if ID of a symbolic hidden-cpu is correct"
-      (let* [(hidden (hidden-state?? 2))
-             (found-cpu (get-cpu-by-id hidden 0))]
-         (check-pred hidden-cpu? found-cpu)
-         (check-equal? 0 (hidden-cpu-cpu-id found-cpu)))))))
+     "check if ID of a symbolic hidden-cpu is correct"
+     (let* [(hidden (hidden-state?? 2))
+            (found-cpu (get-cpu-by-id hidden 0))]
+       (check-pred hidden-cpu? found-cpu)
+       (check-equal? 0 (hidden-cpu-cpu-id found-cpu)))))))
 
 ;; Given a topology, constructs a symbolic variable representing
 ;; its hidden state
