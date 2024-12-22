@@ -11,13 +11,15 @@
 
 (struct hidden-cpu
   (cpu-id
-   nr-tasks)
+   nr-tasks
+   cpu-load)
   #:transparent)
 
 ;; Generate a symbolic variable representing a hidden-cpu
 (define (hidden-cpu?? cpu-id)
   (define-symbolic* nr-tasks integer?)
-  (hidden-cpu cpu-id nr-tasks))
+  (define-symbolic* cpu-load integer?)
+  (hidden-cpu cpu-id nr-tasks cpu-load))
 
 (define (hidden-cpu-overloaded? cpu)
   (> (hidden-cpu-nr-tasks cpu) 1))
@@ -43,5 +45,5 @@
           (test-true  "idle on 0 tasks" (hidden-cpu-idle? cpu0))
           (test-false "idle on 1 task"  (hidden-cpu-idle? cpu1))
           (test-false "idle on 2 tasks" (hidden-cpu-idle? cpu2)))
-        
+
         (map test-with-id '(0 1 2 3)))))))

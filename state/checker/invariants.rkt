@@ -38,17 +38,23 @@
     (> (total-nr-tasks hidden) (hidden-state-nr-cpus hidden)))
   (define all-idle-after-balance
     (all-sd-bufs
-      visible 
-      #:null-value #f
-      (lambda (env)
-        ;; check if env-idle is CPU_IDLE
-        ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
-        ;; since we want it to not transition right
-        ;; fortunately we get these in string form asw
-        (or (equal? (lb-env-idle env) "CPU_IDLE")
-            (equal? (lb-env-idle env) "CPU_NEWLY_IDLE")))))
+     visible
+     #:null-value #f
+     (lambda (logmsg)
+       (define env (lb-logmsg-lb-env logmsg))
+       ;; check if env-idle is CPU_IDLE
+       ;; maybe also CPU_NEWLY_IDLE? but CPU_IDLE should be good
+       ;; since we want it to not transition right
+       ;; fortunately we get these in string form asw
+       (or (equal? (lb-env-idle env) "CPU_IDLE")
+           (equal? (lb-env-idle env) "CPU_NEWLY_IDLE")))))
   ;; return false if all sd returned true
   (not (and theres-enough-work all-idle-after-balance)))
+
+;; We should not move a task from src -> dst if there is some other
+;; core with 3x the load (constant can be adjusted as needed)
+; (define (moves-from-busiest hidden visible)
+;   (all-sd-bufs visible (lambda (env))))
 
 ;; sanity 1 -- any valid assignment fails the check
 (define (sanity hidden visible)
@@ -67,12 +73,12 @@
   (define any-idle (any-cpus-idle? hidden))
   (define moves-overloaded-to-idle
     (any-sd-buf
-      visible
-      (lambda (env)
-        (define src-cpu (lb-env-src-cpu env))
-        (define dst-cpu (lb-env-dst-cpu env))
-        (and (hidden-cpu-overloaded? (get-cpu-by-id hidden src-cpu))
-             (hidden-cpu-idle? (get-cpu-by-id hidden dst-cpu))))))
+     visible
+     (lambda (logmsg)
+       (define src-cpu (lb-env-src-cpu (lb-logmsg-lb-env logmsg)))
+       (define dst-cpu (lb-env-dst-cpu (lb-logmsg-lb-env logmsg)))
+       (and (hidden-cpu-overloaded? (get-cpu-by-id hidden src-cpu))
+            (hidden-cpu-idle? (get-cpu-by-id hidden dst-cpu))))))
   (implies (and any-overloaded any-idle)
            moves-overloaded-to-idle))
 

@@ -1,7 +1,8 @@
 #lang rosette/safe
 
 (require "../hidden/main.rkt"
-         "../visible/main.rkt")
+         "../visible/main.rkt"
+         "util.rkt")
 
 (provide valid)
 
@@ -16,13 +17,13 @@
   ;; the number of tasks it actually has in visible
   (define (check-pclm pclm)
     (define cpu-id (fbq-per-cpu-logmsg-cpu-id pclm))
-    (= (hidden-cpu-nr-tasks (get-cpu-by-id hidden cpu-id))
-       (fbq-per-cpu-logmsg-rq-cfs-h-nr-running pclm)))
+    (eq-or-null? (hidden-cpu-nr-tasks (get-cpu-by-id hidden cpu-id))
+                 (fbq-per-cpu-logmsg-rq-cfs-h-nr-running pclm)))
 
   (define (check-sd-buf sd-buf)
     (define fbq (lb-logmsg-fbq-logmsg (sd-entry-lb-logmsg sd-buf)))
     (if fbq
-        (andmap check-pclm (fbq-logmsg-per-cpu-msgs fbq)) 
+        (andmap check-pclm (fbq-logmsg-per-cpu-msgs fbq))
         #t))
 
   (andmap check-sd-buf (visible-state-sd-buf visible)))
@@ -34,7 +35,7 @@
   ;; We don't have this information currently,
   ;; instead we will check if we move a task from a CPU, it has >0 tasks.
   (define (check-sd-buf sd-buf)
-    (define env (sd-entry-lb-logmsg sd-buf))
+    (define env (lb-logmsg-lb-env (sd-entry-lb-logmsg sd-buf)))
     (if env
         (begin
           (define src-cpu (lb-env-src-cpu env))
