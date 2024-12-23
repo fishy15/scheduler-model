@@ -11,5 +11,8 @@
          any-cpus-overloaded?
          any-cpus-idle?
          get-cpu-by-id
+         get-cpu-mask
+         group-total-nr-tasks
+         group-total-load
          total-nr-tasks)
 

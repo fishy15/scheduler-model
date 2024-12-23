@@ -9,6 +9,8 @@
          (struct-out lb-env)
          (struct-out swb-logmsg)
          (struct-out fbg-logmsg)
+         (struct-out update-stats-per-sg-logmsg)
+         (struct-out update-stats-per-cpu-logmsg)
          (struct-out fbq-logmsg)
          (struct-out swb-per-cpu-logmsg)
          (struct-out fbg-stat)

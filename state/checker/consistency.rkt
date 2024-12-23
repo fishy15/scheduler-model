@@ -12,7 +12,8 @@
        (only-move-from-nonidle hidden visible)
        (non-negative-tasks hidden)
        (non-negative-load hidden)
-       (tasks-iff-positive-load hidden)))
+       (tasks-iff-positive-load hidden)
+       (group-loads-matches-visible hidden visible)))
 
 (define (visible-cpu-nr-tasks-matches-fbq hidden visible)
   ;; for all cpus visited by fbq, check that
@@ -65,3 +66,20 @@
             (equal? (> (hidden-cpu-nr-tasks cpu) 0)
                     (> (hidden-cpu-cpu-load cpu) 0)))
           (hidden-state-cpus hidden)))
+
+;; Check that for each group that we collected data on,
+;; the total load is the sum of the individual loads
+(define (group-loads-matches-visible hidden visible)
+  (all-sd-bufs
+   visible
+   (lambda (lb-logmsg)
+     (define fbg-logmsg (lb-logmsg-fbg-logmsg lb-logmsg))
+     (cond
+       [(false? fbg-logmsg) #t]
+       [else
+        (andmap (lambda (update-stats)
+                  (define mask (update-stats-per-sg-logmsg-cpus update-stats))
+                  (define sgs (update-stats-per-sg-logmsg-sgs update-stats))
+                  (define group-load (fbg-stat-group-load sgs))
+                  (eq? group-load (group-total-load hidden mask)))
+                (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))

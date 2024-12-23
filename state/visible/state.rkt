@@ -102,7 +102,7 @@
 (define-kw-struct update-stats-per-sg-logmsg
   (local-group
    sgs
-   cpu))
+   cpus))
 
 (define-kw-struct update-stats-per-cpu-logmsg
   (load
