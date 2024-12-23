@@ -114,7 +114,7 @@
   (update-stats-per-sg-logmsg
    (access 'local_group)
    (read-fbg-stat (access 'sgs))
-   (access 'cpus)))
+   (read-mask (access 'cpus))))
 
 (define (read-update-stats-per-cpu-logmsg logmsg)
   (define (access key)
