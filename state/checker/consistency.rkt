@@ -13,7 +13,8 @@
        (non-negative-tasks hidden)
        (non-negative-load hidden)
        (tasks-iff-positive-load hidden)
-       (group-loads-matches-visible hidden visible)))
+       (group-loads-matches-visible hidden visible)
+       (group-tasks-matches-visible hidden visible)))
 
 (define (visible-cpu-nr-tasks-matches-fbq hidden visible)
   ;; for all cpus visited by fbq, check that
@@ -88,4 +89,22 @@
                   (define sgs (update-stats-per-sg-logmsg-sgs update-stats))
                   (define group-load (fbg-stat-group-load sgs))
                   (eq? group-load (group-total-load hidden mask)))
+                (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))
+
+;; Check that for each group that we collected data on,
+;; the total number of CFS tasks
+;; is the sum of the individual tasks
+(define (group-tasks-matches-visible hidden visible)
+  (all-sd-bufs
+   visible
+   (lambda (lb-logmsg)
+     (define fbg-logmsg (lb-logmsg-fbg-logmsg lb-logmsg))
+     (cond
+       [(false? fbg-logmsg) #t]
+       [else
+        (andmap (lambda (update-stats)
+                  (define mask (update-stats-per-sg-logmsg-cpus update-stats))
+                  (define sgs (update-stats-per-sg-logmsg-sgs update-stats))
+                  (define group-tasks (fbg-stat-sum-h-nr-running sgs))
+                  (eq? group-tasks (group-total-nr-tasks hidden mask)))
                 (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))

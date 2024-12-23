@@ -91,7 +91,7 @@
    group-util
    group-runnable
    sum-nr-running
-   sun-h-nr-running
+   sum-h-nr-running
    idle-cpus
    group-weight
    group-type
