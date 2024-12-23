@@ -8,6 +8,8 @@
          (struct-out lb-env)
          (struct-out swb-logmsg)
          (struct-out fbg-logmsg)
+         (struct-out update-stats-per-sg-logmsg)
+         (struct-out update-stats-per-cpu-logmsg)
          (struct-out fbq-logmsg)
          (struct-out swb-per-cpu-logmsg)
          (struct-out fbg-stat)
@@ -78,7 +80,9 @@
    sched-energy-enabled
    rd-perf-domain-exists
    rd-overutilized
-   env-imbalanced))
+   env-imbalanced
+   per-sg-msgs
+   per-cpu-msgs))
 
 (define-kw-struct fbg-stat
   (avg-load
@@ -94,6 +98,21 @@
    group-asym-packing
    group-smt-balance
    group-misfit-task-load))
+
+(define-kw-struct update-stats-per-sg-logmsg
+  (local-group
+   sgs
+   cpu))
+
+(define-kw-struct update-stats-per-cpu-logmsg
+  (load
+   util
+   runnable
+   h-nr-running
+   nr-running
+   overloaded
+   overutilized
+   idle))
 
 (define-kw-struct fbq-logmsg
   (capacity-dst-cpu

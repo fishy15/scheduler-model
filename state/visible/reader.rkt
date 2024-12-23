@@ -108,6 +108,30 @@
    (access 'group_smt_balance)
    (access 'group_misfit_task_load)))
 
+(define (read-update-stats-per-sg-logmsg logmsg)
+  (define (access key)
+    (hash-ref logmsg key))
+  (update-stats-per-sg-logmsg
+   (access 'local_group)
+   (read-fbg-stat (access 'sgs))
+   (access 'cpus)))
+
+(define (read-update-stats-per-cpu-logmsg logmsg)
+  (define (access key)
+    (hash-ref logmsg key))
+  (case logmsg
+    ['null #f]
+    [else
+     (update-stats-per-cpu-logmsg
+      (access 'load)
+      (access 'util)
+      (access 'runnable)
+      (access 'h_nr_running)
+      (access 'nr_running)
+      (access 'overloaded)
+      (access 'overutilized)
+      (access 'idle))]))
+
 (define (read-fbg-logmsg logmsg)
   (define (access key)
     (hash-ref logmsg key))
@@ -124,7 +148,11 @@
       (access 'sched_energy_enabled)
       (access 'rd_perf_domain_exists)
       (access 'rd_overutilized)
-      (access 'env_imbalance))]))
+      (access 'env_imbalance)
+      (for/list ([sg-msg (access 'per_sg_msgs)])
+        (read-update-stats-per-sg-logmsg sg-msg))
+      (for/list ([cpu-msg (access 'per_cpu_msgs)])
+        (read-update-stats-per-cpu-logmsg cpu-msg)))]))
 
 (define (read-swb-per-cpu-logmsg pclm)
   (define (access key)
