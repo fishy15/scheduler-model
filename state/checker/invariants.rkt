@@ -1,27 +1,10 @@
 #lang rosette/safe
 
 (require "../hidden/main.rkt"
-         "../visible/main.rkt")
+         "../visible/main.rkt"
+         "util.rkt")
 
 (provide invariants)
-
-(define (check-all-sd-bufs visible pred comb-fn null-value)
-  (define (nullable-pred sd-buf)
-    (let ([env (sd-entry-lb-logmsg sd-buf)])
-      (if env
-          (pred env)
-          null-value)))
-  (comb-fn nullable-pred (visible-state-sd-buf visible)))
-
-;; Check if all of the values sd-bufs satisfy some property.
-;; By default, if an sd-buf wasn't measured, it returns #t
-(define (all-sd-bufs visible pred #:null-value [null-value #t])
-  (check-all-sd-bufs visible pred andmap null-value))
-
-;; Check if any of the values sd-bufs satisfy some property.
-;; By default, if an sd-buf wasn't measured, it returns #f
-(define (any-sd-buf visible pred #:null-value [null-value #f])
-  (check-all-sd-bufs visible pred ormap null-value))
 
 ;; the following functions are "invariants" that the scheduler should always be able to maintain
 
