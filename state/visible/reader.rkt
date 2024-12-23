@@ -27,7 +27,7 @@
 ;;            (if (null? inp)
 ;;                #f
 ;;                body))]))
-     
+
 
 ;; (define-syntax-rule (define-reader (type inp) body)
 ;;   (begin
@@ -43,22 +43,22 @@
   (define (access key)
     (hash-ref env key))
   (lb-env
-    (read-sd (access 'sd))
-    (read-rq (access 'src_rq))
-    (access 'src_cpu)
-    (access 'dst_cpu)
-    (read-rq (access 'dst_rq))
-    (read-mask (access 'dst_grpmask))
-    (access 'new_dst_cpu)
-    (access 'idle)
-    (access 'imbalance)
-    (read-mask (access 'cpus))
-    (access 'flags)
-    (access 'loop)
-    (access 'loop_break)
-    (access 'loop_max)
-    (access 'fbq_type)
-    (access 'migration_type)))
+   (read-sd (access 'sd))
+   (read-rq (access 'src_rq))
+   (access 'src_cpu)
+   (access 'dst_cpu)
+   (read-rq (access 'dst_rq))
+   (read-mask (access 'dst_grpmask))
+   (access 'new_dst_cpu)
+   (access 'idle)
+   (access 'imbalance)
+   (read-mask (access 'cpus))
+   (access 'flags)
+   (access 'loop)
+   (access 'loop_break)
+   (access 'loop_max)
+   (access 'fbq_type)
+   (access 'migration_type)))
 
 (define (read-fbq-per-cpu-logmsg pclm)
   (define (access key)
@@ -140,13 +140,13 @@
    (access 'idle)
    (access 'dst_nr_running)
    (access 'dst_ttwu_pending)
-   (for/list ([pclm (access 'per_cpus_msgs)]) ;; todo fix "cpus"
+   (for/list ([pclm (access 'per_cpu_msgs)])
      (read-swb-per-cpu-logmsg pclm))
    (if (is-null 'group_balance_mask_sg)
        (read-mask (access 'group_balance_mask_sg))
        #f)
    (access 'group_balance_cpu_sg)))
-  
+
 (define (read-lb-logmsg logmsg)
   (define (access key)
     (hash-ref logmsg key))
@@ -157,26 +157,26 @@
        (read-swb-logmsg (access 'swb_logmsg))
        (read-fbg-logmsg (access 'fbg_logmsg))
        (read-fbq-logmsg (access 'fbq_logmsg)))))
-  
+
 (define (read-sd-entry entry)
   (define (access key)
     (hash-ref entry key))
   (sd-entry
-    (access 'max_newidle_lb_cost)
-    (access 'continue_balancing)
-    (access 'interval)
-    (access 'need_serialize)
-    (read-lb-logmsg (access 'lb_logmsg))
-    (access 'new_idle)
-    (access 'new_busy)))
+   (access 'max_newidle_lb_cost)
+   (access 'continue_balancing)
+   (access 'interval)
+   (access 'need_serialize)
+   (read-lb-logmsg (access 'lb_logmsg))
+   (access 'new_idle)
+   (access 'new_busy)))
 
 (define (read-from-json obj)
   (visible-state
-    (hash-ref obj 'cpu)
-    (hash-ref obj 'idle)
-    (hash-ref obj 'sched_idle_cpu)
-    (for/list ([sd-entry (hash-ref obj 'sd_buf)])
-      (read-sd-entry sd-entry))))
+   (hash-ref obj 'cpu)
+   (hash-ref obj 'idle)
+   (hash-ref obj 'sched_idle_cpu)
+   (for/list ([sd-entry (hash-ref obj 'sd_buf)])
+     (read-sd-entry sd-entry))))
 
 (module+ test
   (define single-datapoint
@@ -184,4 +184,3 @@
       (lambda ()
         (list-ref (read-json) 0))))
   (displayln (read-from-json single-datapoint)))
-
