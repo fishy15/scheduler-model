@@ -80,12 +80,15 @@
 (define (read-fbq-logmsg logmsg)
   (define (access key)
     (hash-ref logmsg key))
-  (fbq-logmsg
-   (access 'capacity_dst_cpu)
-   (access 'sched_smt_active)
-   (access 'arch_asym_cpu_priority_dst_cpu)
-   (for/list ([pclm (access 'per_cpu_msgs)])
-     (read-fbq-per-cpu-logmsg pclm))))
+  (case logmsg
+    ['null #f]
+    [else
+     (fbq-logmsg
+      (access 'capacity_dst_cpu)
+      (access 'sched_smt_active)
+      (access 'arch_asym_cpu_priority_dst_cpu)
+      (for/list ([pclm (access 'per_cpu_msgs)])
+        (read-fbq-per-cpu-logmsg pclm)))]))
 
 (define (read-fbg-stat stat)
   (define (access key)
@@ -108,17 +111,20 @@
 (define (read-fbg-logmsg logmsg)
   (define (access key)
     (hash-ref logmsg key))
-  (fbg-logmsg
-   (access 'sd_total_load)
-   (access 'sd_total_capacity)
-   (access 'sd_avg_load)
-   (access 'sd_prefer_sibling)
-   (read-fbg-stat (access 'busiest_stat))
-   (read-fbg-stat (access 'local_stat))
-   (access 'sched_energy_enabled)
-   (access 'rd_perf_domain_exists)
-   (access 'rd_overutilized)
-   (access 'env_imbalance)))
+  (case logmsg
+    ['null #f]
+    [else
+     (fbg-logmsg
+      (access 'sd_total_load)
+      (access 'sd_total_capacity)
+      (access 'sd_avg_load)
+      (access 'sd_prefer_sibling)
+      (read-fbg-stat (access 'busiest_stat))
+      (read-fbg-stat (access 'local_stat))
+      (access 'sched_energy_enabled)
+      (access 'rd_perf_domain_exists)
+      (access 'rd_overutilized)
+      (access 'env_imbalance))]))
 
 (define (read-swb-per-cpu-logmsg pclm)
   (define (access key)
