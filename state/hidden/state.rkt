@@ -2,6 +2,11 @@
 
 (require "cpu.rkt"
          "../topology.rkt"
+         (only-in racket/base
+                  for/list
+                  in-string
+                  list->string
+                  string->list)
          (only-in racket/list range))
 
 (module+ test
@@ -13,6 +18,9 @@
          any-cpus-overloaded?
          any-cpus-idle?
          get-cpu-by-id
+         get-cpu-mask
+         group-total-nr-tasks
+         group-total-load
          construct-hidden-state-var)
 
 (struct hidden-state
@@ -57,8 +65,8 @@
     "get-cpu-by-id"
     (test-case
      "check retrieving a value in the list"
-     (let* [(cpu0 (hidden-cpu 0 0))
-            (cpu1 (hidden-cpu 1 1))
+     (let* [(cpu0 (hidden-cpu 0 0 0))
+            (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
        (check-equal? cpu0 (get-cpu-by-id hidden 0))))
     (test-case
@@ -67,6 +75,52 @@
             (found-cpu (get-cpu-by-id hidden 0))]
        (check-pred hidden-cpu? found-cpu)
        (check-equal? 0 (hidden-cpu-cpu-id found-cpu)))))))
+
+;; Given a cpu mask (in little endian order),
+;; return the list of cpus that are marked
+(define (get-cpu-mask state mask)
+  (define big-endian-mask (list->string (reverse (string->list mask))))
+  (for/list ([present (in-string big-endian-mask)]
+             [cpu (hidden-state-cpus state)]
+             #:when (eq? present #\1))
+    cpu))
+
+;; Sums the number of tasks running in the mask
+(define (group-total-nr-tasks state mask)
+  (apply + (map hidden-cpu-nr-tasks (get-cpu-mask state mask))))
+
+;; Sums the loads on each state in the mask
+(define (group-total-load state mask)
+  (apply + (map hidden-cpu-cpu-load (get-cpu-mask state mask))))
+
+(module+ test
+  (run-tests
+   (test-suite
+    "get-cpu-mask"
+    (test-case
+     "check if returning a full mask is correct"
+     (let* [(cpu0 (hidden-cpu 0 0 0))
+            (cpu1 (hidden-cpu 1 1 0))
+            (hidden (hidden-state (list cpu0 cpu1) 2))]
+       (check-equal? (list cpu0 cpu1) (get-cpu-mask hidden "11"))))
+    (test-case
+     "check if returning a mask with first value is correct"
+     (let* [(cpu0 (hidden-cpu 0 0 0))
+            (cpu1 (hidden-cpu 1 1 0))
+            (hidden (hidden-state (list cpu0 cpu1) 2))]
+       (check-equal? (list cpu0) (get-cpu-mask hidden "01"))))
+    (test-case
+     "check if returning a mask with second value is correct"
+     (let* [(cpu0 (hidden-cpu 0 0 0))
+            (cpu1 (hidden-cpu 1 1 0))
+            (hidden (hidden-state (list cpu0 cpu1) 2))]
+       (check-equal? (list cpu1) (get-cpu-mask hidden "10"))))
+    (test-case
+     "check if returning a mask with no values is correct"
+     (let* [(cpu0 (hidden-cpu 0 0 0))
+            (cpu1 (hidden-cpu 1 1 0))
+            (hidden (hidden-state (list cpu0 cpu1) 2))]
+       (check-equal? '() (get-cpu-mask hidden "00")))))))
 
 ;; Given a topology, constructs a symbolic variable representing
 ;; its hidden state
