@@ -1,0 +1,186 @@
+[
+  {
+    "per_sd_info": [
+      {
+        "sd": {
+          "cpu": 0,
+          "cpumask": null,
+          "cpu_idle_type": null,
+          "fbq_type": null,
+          "migration_type": null,
+          "group_balance_cpu_sg": null,
+          "asym_cpucapacity": null,
+          "asym_packing": null,
+          "share_cpucapacity": null,
+          "should_we_balance": null,
+          "has_busiest": null,
+          "avg_load": null,
+          "imbalance_pct": null,
+          "smt_active": null,
+          "imbalance": null,
+          "span_weight": null
+        },
+        "groups": [
+          {
+            "cpumask": null,
+            "group_type": null,
+            "sum_h_nr_running": null,
+            "sum_nr_running": null,
+            "max_capacity": null,
+            "min_capacity": null,
+            "avg_load": null,
+            "asym_prefer_cpu": null,
+            "misfit_task_load": null,
+            "idle_cpus": null,
+            "group_balance_cpu": null
+          },
+          {
+            "cpumask": null,
+            "group_type": null,
+            "sum_h_nr_running": null,
+            "sum_nr_running": null,
+            "max_capacity": null,
+            "min_capacity": null,
+            "avg_load": null,
+            "asym_prefer_cpu": null,
+            "misfit_task_load": null,
+            "idle_cpus": null,
+            "group_balance_cpu": null
+          }
+        ]
+      }
+    ],
+    "per_cpu_info": [
+      {
+        "fbq_type": null,
+        "idle_cpu": null,
+        "is_core_idle": null,
+        "nr_running": null,
+        "h_nr_running": null,
+        "ttwu_pending": null,
+        "capacity": null,
+        "asym_cpu_priority": null,
+        "rd_overutilized": null,
+        "rd_pd_overlap": null,
+        "arch_scale_cpu_capacity": null,
+        "cpu_load": null,
+        "cpu_util_cfs_boost": null,
+        "misfit_task_load": null,
+        "llc_weight": null,
+        "has_sd_share": null,
+        "nr_idle_scan": null
+      },
+      {
+        "fbq_type": null,
+        "idle_cpu": null,
+        "is_core_idle": null,
+        "nr_running": null,
+        "h_nr_running": null,
+        "ttwu_pending": null,
+        "capacity": null,
+        "asym_cpu_priority": null,
+        "rd_overutilized": null,
+        "rd_pd_overlap": null,
+        "arch_scale_cpu_capacity": null,
+        "cpu_load": null,
+        "cpu_util_cfs_boost": null,
+        "misfit_task_load": null,
+        "llc_weight": null,
+        "has_sd_share": null,
+        "nr_idle_scan": null
+      }
+    ]
+  },
+  {
+    "per_sd_info": [
+      {
+        "sd": {
+          "cpu": 0,
+          "cpumask": null,
+          "cpu_idle_type": null,
+          "fbq_type": null,
+          "migration_type": null,
+          "group_balance_cpu_sg": null,
+          "asym_cpucapacity": null,
+          "asym_packing": null,
+          "share_cpucapacity": null,
+          "should_we_balance": null,
+          "has_busiest": null,
+          "avg_load": null,
+          "imbalance_pct": null,
+          "smt_active": null,
+          "imbalance": null,
+          "span_weight": null
+        },
+        "groups": [
+          {
+            "cpumask": null,
+            "group_type": null,
+            "sum_h_nr_running": null,
+            "sum_nr_running": null,
+            "max_capacity": null,
+            "min_capacity": null,
+            "avg_load": null,
+            "asym_prefer_cpu": null,
+            "misfit_task_load": null,
+            "idle_cpus": null,
+            "group_balance_cpu": null
+          },
+          {
+            "cpumask": null,
+            "group_type": null,
+            "sum_h_nr_running": null,
+            "sum_nr_running": null,
+            "max_capacity": null,
+            "min_capacity": null,
+            "avg_load": null,
+            "asym_prefer_cpu": null,
+            "misfit_task_load": null,
+            "idle_cpus": null,
+            "group_balance_cpu": null
+          }
+        ]
+      }
+    ],
+    "per_cpu_info": [
+      {
+        "fbq_type": null,
+        "idle_cpu": null,
+        "is_core_idle": null,
+        "nr_running": null,
+        "h_nr_running": null,
+        "ttwu_pending": null,
+        "capacity": null,
+        "asym_cpu_priority": null,
+        "rd_overutilized": null,
+        "rd_pd_overlap": null,
+        "arch_scale_cpu_capacity": null,
+        "cpu_load": null,
+        "cpu_util_cfs_boost": null,
+        "misfit_task_load": null,
+        "llc_weight": null,
+        "has_sd_share": null,
+        "nr_idle_scan": null
+      },
+      {
+        "fbq_type": null,
+        "idle_cpu": null,
+        "is_core_idle": null,
+        "nr_running": null,
+        "h_nr_running": null,
+        "ttwu_pending": null,
+        "capacity": null,
+        "asym_cpu_priority": null,
+        "rd_overutilized": null,
+        "rd_pd_overlap": null,
+        "arch_scale_cpu_capacity": null,
+        "cpu_load": null,
+        "cpu_util_cfs_boost": null,
+        "misfit_task_load": null,
+        "llc_weight": null,
+        "has_sd_share": null,
+        "nr_idle_scan": null
+      }
+    ]
+  }
+]

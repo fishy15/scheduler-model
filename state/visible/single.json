@@ -1,53 +1,93 @@
 [
   {
-    "cpu": 1,
-    "idle": "CPU_NOT_IDLE",
-    "sched_idle_cpu": 0,
-    "sd_buf": [
+    "per-sd-info": [
       {
-        "max_newidle_lb_cost": 653470,
-        "continue_balancing": 1,
-        "interval": 63,
-        "need_serialize": 0,
-        "lb_logmsg": {
-          "runs_load_balance": false,
-          "lb_env": null
+        "sd": {
+          "cpu": 0,
+          "cpumask": null,
+          "cpu-idle-type": null,
+          "fbq-type": null,
+          "migration-type": null,
+          "group-balance-cpu-sg": null,
+          "asym-cpucapacity": null,
+          "asym-packing": null,
+          "share-cpucapacity": null,
+          "should-we-balance": null,
+          "has-busiest": null,
+          "avg-load": null,
+          "imbalance-pct": null,
+          "smt-active": null,
+          "imbalance": null,
+          "span-weight": null
         },
-        "new_idle": "CPU_NOT_IDLE",
-        "new_busy": 1
+        "groups": [
+          {
+            "cpumask": null,
+            "group-type": null,
+            "sum-h-nr-running": null,
+            "sum-nr-running": null,
+            "max-capacity": null,
+            "min-capacity": null,
+            "avg-load": null,
+            "asym-prefer-cpu": null,
+            "misfit-task-load": null,
+            "idle-cpus": null,
+            "group-balance-cpu": null
+          },
+          {
+            "cpumask": null,
+            "group-type": null,
+            "sum-h-nr-running": null,
+            "sum-nr-running": null,
+            "max-capacity": null,
+            "min-capacity": null,
+            "avg-load": null,
+            "asym-prefer-cpu": null,
+            "misfit-task-load": null,
+            "idle-cpus": null,
+            "group-balance-cpu": null
+          }
+        ]
+      }
+    ],
+    "per-cpu-info": [
+      {
+        "fbq-type": null,
+        "idle-cpu": null,
+        "is-core-idle": null,
+        "nr-running": null,
+        "h-nr-running": null,
+        "ttwu-pending": null,
+        "capacity": null,
+        "asym-cpu-priority": null,
+        "rd-overutilized": null,
+        "rd-pd-overlap": null,
+        "arch-scale-cpu-capacity": null,
+        "cpu-load": null,
+        "cpu-util-cfs-boost": null,
+        "misfit-task-load": null,
+        "llc-weight": null,
+        "has-sd-share": null,
+        "nr-idle-scan": null
       },
       {
-        "max_newidle_lb_cost": 329612,
-        "continue_balancing": 1,
-        "interval": 127,
-        "need_serialize": 1024,
-        "lb_logmsg": {
-          "runs_load_balance": true,
-          "lb_env": {
-            "sd": {},
-            "src_rq": null,
-            "src_cpu": 0,
-            "dst_cpu": 1,
-            "dst_rq": {},
-            "dst_grpmask": {
-              "mask": "0011"
-            },
-            "new_dst_cpu": 0,
-            "idle": "CPU_NOT_IDLE",
-            "imbalance": 0,
-            "cpus": {
-              "mask": "0011"
-            },
-            "flags": 0,
-            "loop": 0,
-            "loop_break": 32,
-            "loop_max": 0,
-            "fbq_type": {},
-            "migration_type": {}
-          }
-        },
-        "new_idle": "CPU_IDLE",
-        "new_busy": 0
+        "fbq-type": null,
+        "idle-cpu": null,
+        "is-core-idle": null,
+        "nr-running": null,
+        "h-nr-running": null,
+        "ttwu-pending": null,
+        "capacity": null,
+        "asym-cpu-priority": null,
+        "rd-overutilized": null,
+        "rd-pd-overlap": null,
+        "arch-scale-cpu-capacity": null,
+        "cpu-load": null,
+        "cpu-util-cfs-boost": null,
+        "misfit-task-load": null,
+        "llc-weight": null,
+        "has-sd-share": null,
+        "nr-idle-scan": null
       }
     ]
   }

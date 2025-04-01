@@ -3,133 +3,65 @@
 (require "../util/kw-struct.rkt")
 
 (provide (struct-out visible-state)
-         (struct-out sd-entry)
-         (struct-out lb-logmsg)
-         (struct-out lb-env)
-         (struct-out swb-logmsg)
-         (struct-out fbg-logmsg)
-         (struct-out update-stats-per-sg-logmsg)
-         (struct-out update-stats-per-cpu-logmsg)
-         (struct-out fbq-logmsg)
-         (struct-out swb-per-cpu-logmsg)
-         (struct-out fbg-stat)
-         (struct-out fbq-per-cpu-logmsg))
+         (struct-out sd-info)
+         (struct-out sd)
+         (struct-out sg-info)
+         (struct-out cpu-info))
 
 (define-kw-struct visible-state
-  (cpu
-   idle
-   sched-idle-cpu
-   sd-buf))
+  (per-sd-info
+   per-cpu-info))
 
-(define-kw-struct sd-entry
-  (max-newidle-lb-cost
-   continue-balancing
-   interval
-   need-serialize
-   lb-logmsg
-   new-idle
-   new-busy))
-
-(define-kw-struct lb-logmsg
-  (lb-env
-   swb-logmsg
-   fbg-logmsg
-   fbq-logmsg))
-
-(define-kw-struct lb-env
+(define-kw-struct sd-info
   (sd
-   src-rq
-   src-cpu
-   dst-cpu
-   dst-rq
-   dst-grpmask
-   new-dst-cpu
-   idle
-   imbalance
-   cpus
-   flags
-   loop
-   loop-break
-   loop-max
+   groups))
+
+(define-kw-struct sd
+  (cpu
+   cpumask
+   cpu-idle-type
    fbq-type
-   migration-type))
-
-(define-kw-struct swb-logmsg
-  (swb-cpus
-   dst-cpu
-   cpus
-   idle
-   dst-nr-running
-   dst-ttwu-pending
-   per-cpu-msgs
-   group-balance-mask-sg
-   group-balance-cpu-sg))
-
-(define-kw-struct swb-per-cpu-logmsg
-  (cpu-id
-   idle-cpu
-   is-core-idle-cpu))
-
-(define-kw-struct fbg-logmsg
-  (sd-total-load
-   sd-total-capacity
-   sd-avg-load
-   sd-prefer-sibling
-   busiest-stat
-   local-stat
-   sched-energy-enabled
-   rd-perf-domain-exists
-   rd-overutilized
-   env-imbalanced
-   per-sg-msgs
-   per-cpu-msgs))
-
-(define-kw-struct fbg-stat
-  (avg-load
-   group-load
-   group-capacity
-   group-util
-   group-runnable
-   sum-nr-running
-   sum-h-nr-running
-   idle-cpus
-   group-weight
-   group-type
-   group-asym-packing
-   group-smt-balance
-   group-misfit-task-load))
-
-(define-kw-struct update-stats-per-sg-logmsg
-  (local-group
-   sgs
-   cpus))
-
-(define-kw-struct update-stats-per-cpu-logmsg
-  (load
-   util
-   runnable
-   h-nr-running
-   nr-running
-   overloaded
-   overutilized
-   idle))
-
-(define-kw-struct fbq-logmsg
-  (capacity-dst-cpu
-   sched-smt-active
-   arch-asym-cpu-priority-dst-cpu
-   per-cpu-msgs))
-
-(define-kw-struct fbq-per-cpu-logmsg
-  (cpu-id
-   rq-type
-   rq-cfs-h-nr-running
-   capacity
-   arch-asym-cpu-priority
    migration-type
-   cpu-load
-   rq-cpu-capacity
+   group-balance-cpu-sg
+   asym-cpucapacity
+   asym-packing
+   share-cpucapacity
+   should-we-balance
+   has-busiest
+   avg-load
+   imbalance-pct
+   smt-active
+   imbalance
+   span-weight))
+
+(define-kw-struct sg-info
+  (cpumask
+   group-type
+   sum-h-nr-running
+   sum-nr-running
+   max-capacity
+   min-capacity
+   avg-load
+   asym-prefer-cpu
+   misfit-task-load
+   idle-cpus
+   group-balance-cpu))
+
+(define-kw-struct cpu-info
+  (fbq-type
+   idle-cpu
+   is-core-idle
+   nr-running
+   h-nr-running
+   ttwu-pending
+   capacity
+   asym-cpu-priority
+   rd-overutilized
+   rd-pd-overlap
    arch-scale-cpu-capacity
-   sd-imbalance-pct
+   cpu-load
    cpu-util-cfs-boost
-   rq-misfit-task-load))
+   misfit-task-load
+   llc-weight
+   has-sd-share
+   nr-idle-scan))
