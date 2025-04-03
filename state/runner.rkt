@@ -27,4 +27,8 @@
        (displayln (format "~a: SUCCEEDED" invariant))
        (displayln (format "hidden: ~a" hidden))
        (displayln (format "visible: ~a" visible)))]
-    [else (displayln (format "~a: FAILED" invariant))]))
+    [visible
+     (begin
+       (displayln (format "~a: SUCCEEDED" invariant))
+       (displayln (format "visible: ~a" visible)))]
+    [_ (displayln (format "~a: FAILED" invariant))]))

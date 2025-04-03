@@ -18,6 +18,7 @@
          any-cpus-overloaded?
          any-cpus-idle?
          get-cpu-by-id
+         list-symbolic-vars
          get-cpu-mask
          group-total-nr-tasks
          group-total-load
@@ -58,6 +59,9 @@
        (car cpu-list)]
       [else (rec (cdr cpu-list))]))
   (rec cpus))
+
+(define (list-symbolic-vars hidden)
+  (apply append (map cpu-list-symbolic-vars (hidden-state-cpus hidden))))
 
 (module+ test
   (run-tests

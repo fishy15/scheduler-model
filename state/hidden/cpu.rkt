@@ -7,7 +7,8 @@
 (provide (struct-out hidden-cpu)
          hidden-cpu??
          hidden-cpu-overloaded?
-         hidden-cpu-idle?)
+         hidden-cpu-idle?
+         cpu-list-symbolic-vars)
 
 (struct hidden-cpu
   (cpu-id
@@ -26,6 +27,11 @@
 
 (define (hidden-cpu-idle? cpu)
   (= (hidden-cpu-nr-tasks cpu) 0))
+
+;; List symbolic variables in a hidden cpu
+(define (cpu-list-symbolic-vars cpu)
+  (list (hidden-cpu-nr-tasks cpu)
+        (hidden-cpu-cpu-load cpu)))
 
 (module+ test
   (run-tests

@@ -11,6 +11,7 @@
          any-cpus-overloaded?
          any-cpus-idle?
          get-cpu-by-id
+         list-symbolic-vars
          get-cpu-mask
          group-total-nr-tasks
          group-total-load

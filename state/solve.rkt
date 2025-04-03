@@ -9,15 +9,16 @@
 
 (define (solve-case visible topology invariant)
   (let ([hidden (construct-hidden-state-var topology)])
+    (define hidden-vars (list-symbolic-vars hidden))
     (define M
       (solve
        (begin
          (assume (valid hidden visible))
-         (assert (not (invariant hidden visible)))
-         (displayln "hi")
-         (displayln (vc)))))
-    (if (sat? M)
-        (cons (evaluate hidden M) visible)
+         (assert (not (invariant hidden visible))))))
+    (define completed-M (complete-solution M hidden-vars))
+    (if (sat? completed-M)
+        (cons (evaluate hidden completed-M) visible)
+        ; (evaluate hidden completed-M)
         #f)))
 
 (define (solve-cases data topology invariant)
