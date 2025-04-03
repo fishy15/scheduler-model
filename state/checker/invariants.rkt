@@ -6,6 +6,7 @@
 
 (provide invariants)
 
+#|
 ;; the following functions are "invariants" that the scheduler should always be able to maintain
 
 ;; if there are >N tasks, no cpu should be idle
@@ -39,15 +40,6 @@
 ; (define (moves-from-busiest hidden visible)
 ;   (all-sd-bufs visible (lambda (env))))
 
-;; sanity 1 -- any valid assignment fails the check
-(define (sanity hidden visible)
-  #f)
-
-;; sanity 2 -- check that rosette can instantiate variables
-(define (sanity-two hidden visible)
-  (define cpu0 (get-cpu-by-id hidden 0))
-  (equal? (hidden-cpu-nr-tasks cpu0) 0))
-
 ;; Checks if there exists an overloaded CPU (>= 2 tasks) and an idle CPU (= 0 tasks),
 ;; then the scheduler attempts to make progress by moving some tasks
 ;; from an overloaded CPU to an idle CPU.
@@ -68,5 +60,15 @@
 (define (all-invariants hidden visible)
   (and (overloaded-to-idle hidden visible)
        (right-to-work hidden visible)))
+|#
 
-(define invariants (list overloaded-to-idle right-to-work all-invariants))
+;; sanity 1 -- any valid assignment fails the check
+(define (sanity hidden visible)
+  #f)
+
+;; sanity 2 -- check that rosette can instantiate variables
+(define (sanity-two hidden visible)
+  (define cpu0 (get-cpu-by-id hidden 0))
+  (equal? (hidden-cpu-nr-tasks cpu0) 0))
+
+(define invariants (list sanity sanity-two))

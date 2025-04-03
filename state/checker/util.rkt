@@ -2,13 +2,12 @@
 
 (require "../visible/main.rkt")
 
-(provide eq-or-null?
-         all-sd-bufs
-         any-sd-buf)
+(provide eq-or-null?)
 
 (define (eq-or-null? hidden visible)
   (or (eq? visible 'null) (eq? hidden visible)))
 
+#|
 (define (check-all-sd-bufs visible pred comb-fn null-value)
   (define (nullable-pred sd-buf)
     (let ([env (sd-entry-lb-logmsg sd-buf)])
@@ -26,3 +25,4 @@
 ;; By default, if an sd-buf wasn't measured, it returns #f
 (define (any-sd-buf visible pred #:null-value [null-value #f])
   (check-all-sd-bufs visible pred ormap null-value))
+|#

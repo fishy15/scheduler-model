@@ -8,34 +8,36 @@
 
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
-  (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
-       (only-move-from-nonidle hidden visible)
-       (non-negative-tasks hidden)
-       (non-negative-load hidden)
-       (tasks-iff-positive-load hidden)
-       (group-loads-matches-visible hidden visible)
-       (group-tasks-matches-visible hidden visible)))
+  (and (visible-cpu-nr-tasks-matches hidden visible)))
+; (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
+;      (only-move-from-nonidle hidden visible)
+;      (non-negative-tasks hidden)
+;      (non-negative-load hidden)
+;      (tasks-iff-positive-load hidden)
+;      (group-loads-matches-visible hidden visible)
+;      (group-tasks-matches-visible hidden visible)))
 
-(define (visible-cpu-nr-tasks-matches-fbq hidden visible)
-  ;; for all cpus visited by fbq, check that
+(define (check-all-cpus visible f)
+  (define nr-cpus (visible-state-nr-cpus visible))
+  (define (go cpu-id)
+    (cond
+      [(>= cpu-id nr-cpus) #t]
+      [else (and (f cpu-id) (go (+ cpu-id 1)))]))
+  (go 0))
+
+(define (visible-cpu-nr-tasks-matches hidden visible)
   ;; the number of tasks we assign to it in hidden matches
   ;; the number of tasks it actually has in visible
-  (define (check-pclm pclm)
-    (define cpu-id (fbq-per-cpu-logmsg-cpu-id pclm))
-    (eq-or-null? (hidden-cpu-nr-tasks (get-cpu-by-id hidden cpu-id))
-                 (fbq-per-cpu-logmsg-rq-cfs-h-nr-running pclm)))
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (get-cpu-by-id hidden cpu-id))
+    (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
+    (define visible-cpu (visible-state-get-cpu visible cpu-id))
+    (define visible-nr-tasks (cpu-info-nr-running visible-cpu))
+    (displayln (format "cpu ~a has ~a ~a" cpu-id hidden-nr-tasks visible-nr-tasks))
+    (eq-or-null? hidden-nr-tasks visible-nr-tasks))
+  (check-all-cpus visible check-cpu))
 
-  (define (check-sd-buf sd-buf)
-    (define lb-logmsg (sd-entry-lb-logmsg sd-buf))
-    (or (false? lb-logmsg)
-        (begin
-          (define fbq (lb-logmsg-fbq-logmsg lb-logmsg))
-          (if fbq
-              (andmap check-pclm (fbq-logmsg-per-cpu-msgs fbq))
-              #t))))
-
-  (andmap check-sd-buf (visible-state-sd-buf visible)))
-
+#|
 (define (only-move-from-nonidle hidden visible)
   ;; Currently only nr-tasks is defined for the visible state,
   ;; so we need to find for which CPUs we know the number of tasks
@@ -108,3 +110,4 @@
                   (define group-tasks (fbg-stat-sum-h-nr-running sgs))
                   (eq? group-tasks (group-total-nr-tasks hidden mask)))
                 (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))
+|#
