@@ -3,20 +3,20 @@
 (require "../util/kw-struct.rkt")
 
 (provide (struct-out visible-state)
-         (struct-out sd-info)
-         (struct-out sd)
-         (struct-out sg-info)
-         (struct-out cpu-info))
+         (struct-out visible-sd-info)
+         (struct-out visible-sd)
+         (struct-out visible-sg-info)
+         (struct-out visible-cpu-info))
 
 (define-kw-struct visible-state
   (per-sd-info
    per-cpu-info))
 
-(define-kw-struct sd-info
+(define-kw-struct visible-sd-info
   (sd
    groups))
 
-(define-kw-struct sd
+(define-kw-struct visible-sd
   (cpu
    cpumask
    cpu-idle-type
@@ -34,7 +34,7 @@
    imbalance
    span-weight))
 
-(define-kw-struct sg-info
+(define-kw-struct visible-sg-info
   (cpumask
    group-type
    sum-h-nr-running
@@ -47,7 +47,7 @@
    idle-cpus
    group-balance-cpu))
 
-(define-kw-struct cpu-info
+(define-kw-struct visible-cpu-info
   (fbq-type
    idle-cpu
    is-core-idle

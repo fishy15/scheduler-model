@@ -40,9 +40,9 @@
     (let ()
       (begin
         (define (test-with-id id)
-          (define cpu0 (hidden-cpu id 0))
-          (define cpu1 (hidden-cpu id 1))
-          (define cpu2 (hidden-cpu id 2))
+          (define cpu0 (hidden-cpu id 0 0))
+          (define cpu1 (hidden-cpu id 1 1))
+          (define cpu2 (hidden-cpu id 2 2))
 
           (test-false "overloaded on 0 tasks" (hidden-cpu-overloaded? cpu0))
           (test-false "overloaded on 1 task"  (hidden-cpu-overloaded? cpu1))

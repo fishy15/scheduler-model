@@ -8,12 +8,12 @@
          construct-hidden-state-var
          hidden-cpu-overloaded?
          hidden-cpu-idle?
-         any-cpus-overloaded?
-         any-cpus-idle?
-         get-cpu-by-id
+         hidden-any-cpus-overloaded?
+         hidden-any-cpus-idle?
+         hidden-get-cpu-by-id
          list-symbolic-vars
-         get-cpu-mask
-         group-total-nr-tasks
-         group-total-load
-         total-nr-tasks)
+         hidden-get-cpus-by-mask
+         hidden-group-total-nr-tasks
+         hidden-group-total-load
+         hidden-total-nr-tasks)
 

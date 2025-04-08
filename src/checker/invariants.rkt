@@ -63,12 +63,12 @@
 |#
 
 ;; sanity 1 -- any valid assignment fails the check
-(define (sanity hidden visible)
+(define (sanity _hidden _visible)
   #f)
 
 ;; sanity 2 -- check that rosette can instantiate variables
-(define (sanity-two hidden visible)
-  (define cpu0 (get-cpu-by-id hidden 0))
+(define (sanity-two hidden _visible)
+  (define cpu0 (hidden-get-cpu-by-id hidden 0))
   (equal? (hidden-cpu-nr-tasks cpu0) 0))
 
 (define invariants (list sanity sanity-two))

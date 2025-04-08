@@ -17,12 +17,12 @@
   (map read-sd-info obj))
 
 (define (read-sd-info obj)
-  (sd-info
+  (visible-sd-info
    (read-sd (hash-ref obj 'sd))
    (read-all-sg-info (hash-ref obj 'groups))))
 
 (define (read-sd obj)
-  (sd
+  (visible-sd
    (hash-ref obj 'cpu)
    (hash-ref obj 'cpumask)
    (hash-ref obj 'cpu-idle-type)
@@ -44,7 +44,7 @@
   (map read-sg-info obj))
 
 (define (read-sg-info obj)
-  (sg-info
+  (visible-sg-info
    (hash-ref obj 'cpumask)
    (hash-ref obj 'group-type)
    (hash-ref obj 'sum-h-nr-running)
@@ -61,7 +61,7 @@
   (map read-cpu-info obj))
 
 (define (read-cpu-info obj)
-  (cpu-info
+  (visible-cpu-info
    (hash-ref obj 'fbq-type)
    (hash-ref obj 'idle-cpu)
    (hash-ref obj 'is-core-idle)

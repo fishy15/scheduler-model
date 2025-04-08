@@ -5,10 +5,10 @@
          "methods.rkt")
 
 (provide (struct-out visible-state)
-         (struct-out sd-info)
-         (struct-out sd)
-         (struct-out sg-info)
-         (struct-out cpu-info)
+         (struct-out visible-sd-info)
+         (struct-out visible-sd)
+         (struct-out visible-sg-info)
+         (struct-out visible-cpu-info)
          read-from-json
          visible-state-nr-cpus
          visible-state-get-cpu)

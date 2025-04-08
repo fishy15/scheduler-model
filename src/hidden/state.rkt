@@ -14,14 +14,14 @@
            rackunit/text-ui))
 
 (provide (struct-out hidden-state)
-         total-nr-tasks
-         any-cpus-overloaded?
-         any-cpus-idle?
-         get-cpu-by-id
+         hidden-total-nr-tasks
+         hidden-any-cpus-overloaded?
+         hidden-any-cpus-idle?
+         hidden-get-cpu-by-id
          list-symbolic-vars
-         get-cpu-mask
-         group-total-nr-tasks
-         group-total-load
+         hidden-get-cpus-by-mask
+         hidden-group-total-nr-tasks
+         hidden-group-total-load
          construct-hidden-state-var)
 
 (struct hidden-state
@@ -35,22 +35,22 @@
   (hidden-state cpus nr-cpus))
 
 ;; get total task count
-(define (total-nr-tasks state)
+(define (hidden-total-nr-tasks state)
   (foldl (lambda (cpu acc) (+ acc (hidden-cpu-nr-tasks cpu))) 0 (hidden-state-cpus state)))
 
 ;; Checks if any CPU is overloaded
-(define (any-cpus-overloaded? state)
+(define (hidden-any-cpus-overloaded? state)
   (define cpus (hidden-state-cpus state))
   (ormap hidden-cpu-overloaded? cpus))
 
 ;; Checks if any CPU is idle
-(define (any-cpus-idle? state)
+(define (hidden-any-cpus-idle? state)
   (define cpus (hidden-state-cpus state))
   (ormap hidden-cpu-idle? cpus))
 
 ;; Retrieves a hidden-cpu by the id
 ;; If there is no match, returns #f
-(define (get-cpu-by-id state id)
+(define (hidden-get-cpu-by-id state id)
   (define cpus (hidden-state-cpus state))
   (define (rec cpu-list)
     (cond
@@ -72,17 +72,17 @@
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? cpu0 (get-cpu-by-id hidden 0))))
+       (check-equal? cpu0 (hidden-get-cpu-by-id hidden 0))))
     (test-case
      "check if ID of a symbolic hidden-cpu is correct"
      (let* [(hidden (hidden-state?? 2))
-            (found-cpu (get-cpu-by-id hidden 0))]
+            (found-cpu (hidden-get-cpu-by-id hidden 0))]
        (check-pred hidden-cpu? found-cpu)
        (check-equal? 0 (hidden-cpu-cpu-id found-cpu)))))))
 
 ;; Given a cpu mask (in little endian order),
 ;; return the list of cpus that are marked
-(define (get-cpu-mask state mask)
+(define (hidden-get-cpus-by-mask state mask)
   (define big-endian-mask (list->string (reverse (string->list mask))))
   (for/list ([present (in-string big-endian-mask)]
              [cpu (hidden-state-cpus state)]
@@ -90,12 +90,12 @@
     cpu))
 
 ;; Sums the number of tasks running in the mask
-(define (group-total-nr-tasks state mask)
-  (apply + (map hidden-cpu-nr-tasks (get-cpu-mask state mask))))
+(define (hidden-group-total-nr-tasks state mask)
+  (apply + (map hidden-cpu-nr-tasks (hidden-get-cpus-by-mask state mask))))
 
 ;; Sums the loads on each state in the mask
-(define (group-total-load state mask)
-  (apply + (map hidden-cpu-cpu-load (get-cpu-mask state mask))))
+(define (hidden-group-total-load state mask)
+  (apply + (map hidden-cpu-cpu-load (hidden-get-cpus-by-mask state mask))))
 
 (module+ test
   (run-tests
@@ -106,25 +106,25 @@
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? (list cpu0 cpu1) (get-cpu-mask hidden "11"))))
+       (check-equal? (list cpu0 cpu1) (hidden-get-cpus-by-mask hidden "11"))))
     (test-case
      "check if returning a mask with first value is correct"
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? (list cpu0) (get-cpu-mask hidden "01"))))
+       (check-equal? (list cpu0) (hidden-get-cpus-by-mask hidden "01"))))
     (test-case
      "check if returning a mask with second value is correct"
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? (list cpu1) (get-cpu-mask hidden "10"))))
+       (check-equal? (list cpu1) (hidden-get-cpus-by-mask hidden "10"))))
     (test-case
      "check if returning a mask with no values is correct"
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? '() (get-cpu-mask hidden "00")))))))
+       (check-equal? '() (hidden-get-cpus-by-mask hidden "00")))))))
 
 ;; Given a topology, constructs a symbolic variable representing
 ;; its hidden state
