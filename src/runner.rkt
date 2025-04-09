@@ -26,11 +26,11 @@
   (match result
     [(cons hidden visible)
      (begin
-       (displayln (format "~a: SUCCEEDED" invariant))
+       (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
        (displayln (format "hidden: ~a" hidden))
        (displayln (format "visible: ~a" visible)))]
     [visible
      (begin
-       (displayln (format "~a: SUCCEEDED" invariant))
+       (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
        (displayln (format "visible: ~a" visible)))]
     [_ (displayln (format "~a: FAILED" invariant))]))

@@ -53,27 +53,36 @@
         [else #t])))
   (andmap check-sd (visible-state-per-sd-info visible)))
 
-#|
-;; Checks if there exists an overloaded CPU (>= 2 tasks) and an idle CPU (= 0 tasks),
+;; Checks if there exists an overloaded CPU (>= 2 tasks) and dst is idle (0 tasks)
 ;; then the scheduler attempts to make progress by moving some tasks
-;; from an overloaded CPU to an idle CPU.
+;; from an overloaded CPU to dst.
 (define (overloaded-to-idle hidden visible)
-  (define any-overloaded (any-cpus-overloaded? hidden))
-  (define any-idle (any-cpus-idle? hidden))
-  (define moves-overloaded-to-idle
-    (any-sd-buf
-     visible
-     (lambda (logmsg)
-       (define src-cpu (lb-env-src-cpu (lb-logmsg-lb-env logmsg)))
-       (define dst-cpu (lb-env-dst-cpu (lb-logmsg-lb-env logmsg)))
-       (and (hidden-cpu-overloaded? (get-cpu-by-id hidden src-cpu))
-            (hidden-cpu-idle? (get-cpu-by-id hidden dst-cpu))))))
-  (implies (and any-overloaded any-idle)
-           moves-overloaded-to-idle))
-(define (all-invariants hidden visible)
-  (and (overloaded-to-idle hidden visible)
-       (right-to-work hidden visible)))
-|#
+  (define (moves-to-idle sd-info)
+    (let* ([visible-sd (visible-sd-info-sd sd-info)]
+           [dst-cpu (visible-sd-dst-cpu visible-sd)])
+      (cond
+        [(not (eq? dst-cpu 'null))
+         (let* ([hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
+                [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
+           dst-idle)]
+        [else #f])))
+  (define (moves-idle-to-overloaded sd-info)
+    (let* ([visible-sd (visible-sd-info-sd sd-info)]
+           [src-cpu (visible-sd-src-cpu visible-sd)]
+           [dst-cpu (visible-sd-dst-cpu visible-sd)])
+      (cond
+        [(not (or (eq? src-cpu 'null) (eq? dst-cpu 'null)))
+         (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
+                [hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
+                [src-overloaded (hidden-cpu-overloaded? hidden-src-cpu)]
+                [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
+           (and src-overloaded dst-idle))]
+        [else #f])))
+  (let ([any-overloaded (hidden-any-cpus-overloaded? hidden)]
+        [to-idle (ormap moves-to-idle (visible-state-per-sd-info visible))]
+        [idle-to-overloaded (ormap moves-idle-to-overloaded (visible-state-per-sd-info visible))])
+    (implies (and any-overloaded to-idle)
+             idle-to-overloaded)))
 
 ;; sanity 1 -- any valid assignment fails the check
 (define (sanity _hidden _visible)
@@ -84,4 +93,8 @@
   (define cpu0 (hidden-get-cpu-by-id hidden 0))
   (equal? (hidden-cpu-nr-tasks cpu0) 0))
 
-(define invariants (list moves-from-busiest))
+(define (all-invariants hidden visible)
+  (and (moves-from-busiest hidden visible)
+       (overloaded-to-idle hidden visible)))
+
+(define invariants (list moves-from-busiest overloaded-to-idle all-invariants))
