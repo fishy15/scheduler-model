@@ -23,7 +23,7 @@
 
 (define (read-sd obj)
   (visible-sd
-   (hash-ref obj 'cpu)
+   (hash-ref obj 'dst-cpu)
    (hash-ref obj 'cpumask)
    (hash-ref obj 'cpu-idle-type)
    (hash-ref obj 'fbq-type)
@@ -38,7 +38,8 @@
    (hash-ref obj 'imbalance-pct)
    (hash-ref obj 'smt-active)
    (hash-ref obj 'imbalance)
-   (hash-ref obj 'span-weight)))
+   (hash-ref obj 'span-weight)
+   (hash-ref obj 'src-cpu)))
 
 (define (read-all-sg-info obj)
   (map read-sg-info obj))

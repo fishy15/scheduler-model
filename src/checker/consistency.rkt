@@ -33,7 +33,6 @@
     (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
     (define visible-cpu (visible-state-get-cpu visible cpu-id))
     (define visible-nr-tasks (visible-cpu-info-nr-running visible-cpu))
-    (displayln (format "cpu ~a has ~a ~a" cpu-id hidden-nr-tasks visible-nr-tasks))
     (eq-or-null? hidden-nr-tasks visible-nr-tasks))
   (check-all-cpus visible check-cpu))
 

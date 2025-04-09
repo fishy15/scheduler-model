@@ -17,7 +17,7 @@
    groups))
 
 (define-kw-struct visible-sd
-  (cpu
+  (dst-cpu
    cpumask
    cpu-idle-type
    fbq-type
@@ -32,7 +32,8 @@
    imbalance-pct
    smt-active
    imbalance
-   span-weight))
+   span-weight
+   src-cpu))
 
 (define-kw-struct visible-sg-info
   (cpumask
