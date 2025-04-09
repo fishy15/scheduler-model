@@ -18,6 +18,7 @@
          hidden-any-cpus-overloaded?
          hidden-any-cpus-idle?
          hidden-get-cpu-by-id
+         hidden-max-load
          list-symbolic-vars
          hidden-get-cpus-by-mask
          hidden-group-total-nr-tasks
@@ -60,6 +61,11 @@
       [else (rec (cdr cpu-list))]))
   (rec cpus))
 
+;; Returns the max load on any of the CPUs
+(define (hidden-max-load state)
+  (define cpus (hidden-state-cpus state))
+  (apply max (map hidden-cpu-cpu-load cpus)))
+
 (define (list-symbolic-vars hidden)
   (apply append (map cpu-list-symbolic-vars (hidden-state-cpus hidden))))
 
@@ -83,8 +89,7 @@
 ;; Given a cpu mask (in little endian order),
 ;; return the list of cpus that are marked
 (define (hidden-get-cpus-by-mask state mask)
-  (define big-endian-mask (list->string (reverse (string->list mask))))
-  (for/list ([present (in-string big-endian-mask)]
+  (for/list ([present (in-string mask)]
              [cpu (hidden-state-cpus state)]
              #:when (eq? present #\1))
     cpu))

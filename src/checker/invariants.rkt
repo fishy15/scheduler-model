@@ -34,12 +34,26 @@
            (equal? (lb-env-idle env) "CPU_NEWLY_IDLE")))))
   ;; return false if all sd returned true
   (not (and theres-enough-work all-idle-after-balance)))
+|#
 
 ;; We should not move a task from src -> dst if there is some other
-;; core with 3x the load (constant can be adjusted as needed)
-; (define (moves-from-busiest hidden visible)
-;   (all-sd-bufs visible (lambda (env))))
+;; core with 2x the load (constant can be adjusted as needed)
+(define MOVE-RATIO 2)
+(define (moves-from-busiest hidden visible)
+  (define (check-sd sd-info)
+    (let* ([visible-sd (visible-sd-info-sd sd-info)]
+           [src-cpu (visible-sd-src-cpu visible-sd)]
+           [dst-cpu (visible-sd-dst-cpu visible-sd)])
+      (cond
+        [(not (or (eq? src-cpu 'null) (eq? dst-cpu 'null)))
+         (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
+                [src-load (hidden-cpu-cpu-load hidden-src-cpu)]
+                [max-load (hidden-max-load hidden)])
+           (>= (* src-load MOVE-RATIO) max-load))]
+        [else #t])))
+  (andmap check-sd (visible-state-per-sd-info visible)))
 
+#|
 ;; Checks if there exists an overloaded CPU (>= 2 tasks) and an idle CPU (= 0 tasks),
 ;; then the scheduler attempts to make progress by moving some tasks
 ;; from an overloaded CPU to an idle CPU.
@@ -56,7 +70,6 @@
             (hidden-cpu-idle? (get-cpu-by-id hidden dst-cpu))))))
   (implies (and any-overloaded any-idle)
            moves-overloaded-to-idle))
-
 (define (all-invariants hidden visible)
   (and (overloaded-to-idle hidden visible)
        (right-to-work hidden visible)))
@@ -71,4 +84,4 @@
   (define cpu0 (hidden-get-cpu-by-id hidden 0))
   (equal? (hidden-cpu-nr-tasks cpu0) 0))
 
-(define invariants (list sanity sanity-two))
+(define invariants (list moves-from-busiest))
