@@ -69,10 +69,13 @@
   (define (check-sd sd-info)
     (define (check-sg sg-info)
       (define cpumask (visible-sg-info-cpumask sg-info))
-      (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
-      (define hidden-total-tasks (foldr + 0 (map hidden-cpu-nr-tasks hidden-cpus)))
-      (eq-or-null? hidden-total-tasks
-                   (visible-sg-info-sum-h-nr-running sg-info)))
+      (cond
+        [(eq? cpumask 'null) #t]
+        [else
+         (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+         (define hidden-total-tasks (foldr + 0 (map hidden-cpu-nr-tasks hidden-cpus)))
+         (eq-or-null? hidden-total-tasks
+                      (visible-sg-info-sum-h-nr-running sg-info))]))
     (andmap check-sg (visible-sd-info-groups sd-info)))
   (andmap check-sd (visible-state-per-sd-info visible)))
 
@@ -82,10 +85,13 @@
   (define (check-sd sd-info)
     (define (check-sg sg-info)
       (define cpumask (visible-sg-info-cpumask sg-info))
-      (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
-      (define hidden-total-load (foldr + 0 (map hidden-cpu-cpu-load hidden-cpus)))
-      (define avg-load (/ hidden-total-load (length hidden-cpus)))
-      (eq-or-null? avg-load (visible-sg-info-avg-load sg-info)))
+      (cond
+        [(eq? cpumask 'null) #t]
+        [else
+         (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+         (define hidden-total-load (foldr + 0 (map hidden-cpu-cpu-load hidden-cpus)))
+         (define avg-load (/ hidden-total-load (length hidden-cpus)))
+         (eq-or-null? avg-load (visible-sg-info-avg-load sg-info))]))
     (andmap check-sg (visible-sd-info-groups sd-info)))
   (andmap check-sd (visible-state-per-sd-info visible)))
 
