@@ -11,6 +11,8 @@
 
 (define topology
   (case topology-str
+    [("16")
+     (construct-topology '(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15))]
     [("16-tiered")
      (construct-topology '((0 1 2 3) (4 5 6 7) (8 9 10 11) (12 13 14 15)))]
     [("2")

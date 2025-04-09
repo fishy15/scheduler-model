@@ -8,14 +8,14 @@
 
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible)
-  (and (visible-cpu-nr-tasks-matches hidden visible)))
-; (and (visible-cpu-nr-tasks-matches-fbq hidden visible)
-;      (only-move-from-nonidle hidden visible)
-;      (non-negative-tasks hidden)
-;      (non-negative-load hidden)
-;      (tasks-iff-positive-load hidden)
-;      (group-loads-matches-visible hidden visible)
-;      (group-tasks-matches-visible hidden visible)))
+  (and (visible-cpu-nr-tasks-matches hidden visible)
+       (non-negative-tasks hidden visible)
+       (non-negative-load hidden visible)
+       (tasks-iff-positive-load hidden visible)
+       (non-negative-load hidden visible)
+       (non-negative-load hidden visible)
+       (group-tasks-matches-visible hidden visible)
+       (group-loads-matches-visible hidden visible)))
 
 (define (check-all-cpus visible f)
   (define nr-cpus (visible-state-nr-cpus visible))
@@ -36,6 +36,59 @@
     (eq-or-null? hidden-nr-tasks visible-nr-tasks))
   (check-all-cpus visible check-cpu))
 
+;; Every cpu has a non-negative number of tasks
+(define (non-negative-tasks hidden visible)
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
+    (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
+    (>= hidden-nr-tasks 0))
+  (check-all-cpus visible check-cpu))
+
+;; Every cpu has a non-negative load
+(define (non-negative-load hidden visible)
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
+    (define hidden-load (hidden-cpu-cpu-load hidden-cpu))
+    (>= hidden-load 0))
+  (check-all-cpus visible check-cpu))
+
+;; If we have some number of tasks, then we must have non-zero load.
+;; Similarly, if we have no tasks, then we have 0 load.
+(define (tasks-iff-positive-load hidden visible)
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
+    (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
+    (define hidden-load (hidden-cpu-cpu-load hidden-cpu))
+    (equal? (> hidden-nr-tasks 0)
+            (> hidden-load 0)))
+  (check-all-cpus visible check-cpu))
+
+;; Check that for each group that we collected data on,
+;; the measured average load is the average of the individual loads
+(define (group-tasks-matches-visible hidden visible)
+  (define (check-sd sd-info)
+    (define (check-sg sg-info)
+      (define cpumask (visible-sg-info-cpumask sg-info))
+      (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+      (define hidden-total-tasks (foldr + 0 (map hidden-cpu-nr-tasks hidden-cpus)))
+      (eq-or-null? hidden-total-tasks
+                   (visible-sg-info-sum-h-nr-running sg-info)))
+    (andmap check-sg (visible-sd-info-groups sd-info)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
+
+;; Check that for each group that we collected data on,
+;; the measured average load is the average of the individual loads
+(define (group-loads-matches-visible hidden visible)
+  (define (check-sd sd-info)
+    (define (check-sg sg-info)
+      (define cpumask (visible-sg-info-cpumask sg-info))
+      (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+      (define hidden-total-load (foldr + 0 (map hidden-cpu-cpu-load hidden-cpus)))
+      (define avg-load (/ hidden-total-load (length hidden-cpus)))
+      (eq-or-null? avg-load (visible-sg-info-avg-load sg-info)))
+    (andmap check-sg (visible-sd-info-groups sd-info)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
+
 #|
 (define (only-move-from-nonidle hidden visible)
   ;; Currently only nr-tasks is defined for the visible state,
@@ -54,59 +107,4 @@
                 (> (hidden-cpu-nr-tasks (get-cpu-by-id hidden src-cpu)) 0))
               #t))))
   (andmap check-sd-buf (visible-state-sd-buf visible)))
-
-;; Number of tasks on each core is non-negative
-(define (non-negative-tasks hidden)
-  (andmap (lambda (cpu)
-            (>= (hidden-cpu-nr-tasks cpu) 0))
-          (hidden-state-cpus hidden)))
-
-;; Number of tasks on each core is non-negative
-(define (non-negative-load hidden)
-  (andmap (lambda (cpu)
-            (>= (hidden-cpu-cpu-load cpu) 0))
-          (hidden-state-cpus hidden)))
-
-;; If we have some number of tasks, then we must have non-zero load.
-;; Similarly, if we have no tasks, then we have 0 load.
-(define (tasks-iff-positive-load hidden)
-  (andmap (lambda (cpu)
-            (equal? (> (hidden-cpu-nr-tasks cpu) 0)
-                    (> (hidden-cpu-cpu-load cpu) 0)))
-          (hidden-state-cpus hidden)))
-
-;; Check that for each group that we collected data on,
-;; the total load is the sum of the individual loads
-(define (group-loads-matches-visible hidden visible)
-  (all-sd-bufs
-   visible
-   (lambda (lb-logmsg)
-     (define fbg-logmsg (lb-logmsg-fbg-logmsg lb-logmsg))
-     (cond
-       [(false? fbg-logmsg) #t]
-       [else
-        (andmap (lambda (update-stats)
-                  (define mask (update-stats-per-sg-logmsg-cpus update-stats))
-                  (define sgs (update-stats-per-sg-logmsg-sgs update-stats))
-                  (define group-load (fbg-stat-group-load sgs))
-                  (eq? group-load (group-total-load hidden mask)))
-                (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))
-
-;; Check that for each group that we collected data on,
-;; the total number of CFS tasks
-;; is the sum of the individual tasks
-(define (group-tasks-matches-visible hidden visible)
-  (all-sd-bufs
-   visible
-   (lambda (lb-logmsg)
-     (define fbg-logmsg (lb-logmsg-fbg-logmsg lb-logmsg))
-     (cond
-       [(false? fbg-logmsg) #t]
-       [else
-        (andmap (lambda (update-stats)
-                  (define mask (update-stats-per-sg-logmsg-cpus update-stats))
-                  (define sgs (update-stats-per-sg-logmsg-sgs update-stats))
-                  (define group-tasks (fbg-stat-sum-h-nr-running sgs))
-                  (eq? group-tasks (group-total-nr-tasks hidden mask)))
-                (fbg-logmsg-per-sg-msgs fbg-logmsg))]))))
 |#
