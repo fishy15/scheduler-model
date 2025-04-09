@@ -27,7 +27,7 @@
     "nr-cpus"
     (let ()
       (begin
-        (test-eq? "nr-cpus on single-data" (visible-state-nr-cpus single-datapoint) 2))))))
+        (test-eq? "nr-cpus on single-data" (visible-state-nr-cpus single-datapoint) 16))))))
 
 (define (visible-state-get-cpu visible cpu-id)
   (define per-cpu-info (visible-state-per-cpu-info visible))
