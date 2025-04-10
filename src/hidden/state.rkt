@@ -133,6 +133,5 @@
 
 ;; Given a topology, constructs a symbolic variable representing
 ;; its hidden state
-(define (construct-hidden-state-var topology)
-  (define nr-cpus (topology-size topology))
+(define (construct-hidden-state-var nr-cpus)
   (hidden-state?? nr-cpus))
