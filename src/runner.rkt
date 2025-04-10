@@ -24,6 +24,7 @@
 (for ([invariant invariants])
   (define result (solve-from-file file topology invariant))
   (match result
+    [#f (displayln (format "~a: FAILED" invariant))]
     [(cons hidden visible)
      (begin
        (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
@@ -32,5 +33,4 @@
     [visible
      (begin
        (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
-       (displayln (format "visible: ~a" visible)))]
-    [_ (displayln (format "~a: FAILED" invariant))]))
+       (displayln (format "visible: ~a" visible)))]))
