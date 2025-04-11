@@ -24,8 +24,8 @@
       (solve (assume (valid hidden visible))))
     (define completed-M (complete-solution M hidden-vars))
     (if (sat? completed-M)
-        (inconsistent visible)
-        #f)))
+        #f
+        (inconsistent visible))))
 
 (define (solve-case visible invariant)
   (let* ([nr-cpus (length (visible-state-per-cpu-info visible))]

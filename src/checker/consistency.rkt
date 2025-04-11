@@ -11,7 +11,7 @@
   (and (visible-cpu-nr-tasks-matches hidden visible)
        (non-negative-tasks hidden visible)
        (non-negative-load hidden visible)
-       (tasks-iff-positive-load hidden visible)
+       (tasks-if-positive-load hidden visible)
        (no-tasks-if-idle-cpu-type hidden visible)
        (group-tasks-matches-visible hidden visible)
        (group-loads-matches-visible hidden visible)))
@@ -53,13 +53,13 @@
 
 ;; If we have some number of tasks, then we must have non-zero load.
 ;; Similarly, if we have no tasks, then we have 0 load.
-(define (tasks-iff-positive-load hidden visible)
+(define (tasks-if-positive-load hidden visible)
   (define (check-cpu cpu-id)
     (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
     (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
     (define hidden-load (hidden-cpu-cpu-load hidden-cpu))
-    (equal? (> hidden-nr-tasks 0)
-            (> hidden-load 0)))
+    (implies (> hidden-load 0)
+             (> hidden-nr-tasks 0)))
   (check-all-cpus visible check-cpu))
 
 ;; If the cpu idle type we used was CPU_IDLE,
