@@ -12,8 +12,7 @@
        (non-negative-tasks hidden visible)
        (non-negative-load hidden visible)
        (tasks-iff-positive-load hidden visible)
-       (non-negative-load hidden visible)
-       (non-negative-load hidden visible)
+       (no-tasks-if-idle-cpu-type hidden visible)
        (group-tasks-matches-visible hidden visible)
        (group-loads-matches-visible hidden visible)))
 
@@ -63,8 +62,8 @@
             (> hidden-load 0)))
   (check-all-cpus visible check-cpu))
 
-;; If we have some number of tasks, then we must have non-zero load.
-;; Similarly, if we have no tasks, then we have 0 load.
+;; If the cpu idle type we used was CPU_IDLE,
+;; then there must be zero tasks on the rq.
 (define (no-tasks-if-idle-cpu-type hidden visible)
   (define (check-cpu cpu-id)
     (let* ([visible-cpu (visible-state-get-cpu visible cpu-id)]
