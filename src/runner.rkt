@@ -1,10 +1,8 @@
 #lang racket/base
 
 (require racket/match
-         racket/cmdline
          "solve.rkt"
-         "checker/main.rkt"
-         "topology.rkt")
+         "checker/main.rkt")
 
 (define file (vector-ref (current-command-line-arguments) 0))
 
@@ -13,13 +11,13 @@
 (for ([invariant invariants])
   (define result (solve-from-file file invariant))
   (match result
-    [#f (displayln (format "~a: FAILED" invariant))]
-    [(cons hidden visible)
+    [(success hidden visible)
      (begin
        (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
        (displayln (format "hidden: ~a" hidden))
        (displayln (format "visible: ~a" visible)))]
-    [visible
+    [(inconsistent visible)
      (begin
-       (displayln (format "~a: FOUND COUNTEREXAMPLE" invariant))
-       (displayln (format "visible: ~a" visible)))]))
+       (displayln (format "INCONSISTENCY FOUND"))
+       (displayln (format "visible: ~a" visible)))]
+    [_ (displayln (format "~a: FAILED" invariant))]))
