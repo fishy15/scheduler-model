@@ -63,6 +63,19 @@
             (> hidden-load 0)))
   (check-all-cpus visible check-cpu))
 
+;; If we have some number of tasks, then we must have non-zero load.
+;; Similarly, if we have no tasks, then we have 0 load.
+(define (no-tasks-if-idle-cpu-type hidden visible)
+  (define (check-cpu cpu-id)
+    (let* ([visible-cpu (visible-state-get-cpu visible cpu-id)]
+           [visible-cpu-idle-type (visible-cpu-info-cpu-idle-type visible-cpu)]
+           [hidden-cpu (hidden-get-cpu-by-id hidden cpu-id)]
+           [hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu)])
+      (implies (eq? visible-cpu-idle-type "CPU_IDLE")
+               (= hidden-nr-tasks 0))))
+  (check-all-cpus visible check-cpu))
+
+
 ;; Check that for each group that we collected data on,
 ;; the measured average load is the average of the individual loads
 (define (group-tasks-matches-visible hidden visible)

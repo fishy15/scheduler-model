@@ -19,7 +19,6 @@
 (define-kw-struct visible-sd
   (dst-cpu
    cpumask
-   cpu-idle-type
    fbq-type
    migration-type
    group-balance-cpu-sg
@@ -50,6 +49,7 @@
 
 (define-kw-struct visible-cpu-info
   (fbq-type
+   cpu-idle-type
    idle-cpu
    is-core-idle
    nr-running

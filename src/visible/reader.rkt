@@ -25,7 +25,6 @@
   (visible-sd
    (hash-ref obj 'dst-cpu)
    (hash-ref obj 'cpumask)
-   (hash-ref obj 'cpu-idle-type)
    (hash-ref obj 'fbq-type)
    (hash-ref obj 'migration-type)
    (hash-ref obj 'group-balance-cpu-sg)
@@ -64,6 +63,7 @@
 (define (read-cpu-info obj)
   (visible-cpu-info
    (hash-ref obj 'fbq-type)
+   (hash-ref obj 'cpu-idle-type)
    (hash-ref obj 'idle-cpu)
    (hash-ref obj 'is-core-idle)
    (hash-ref obj 'nr-running)

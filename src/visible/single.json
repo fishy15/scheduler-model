@@ -5,7 +5,6 @@
         "sd": {
           "dst-cpu": 0,
           "cpumask": "1111111111111111",
-          "cpu-idle-type": "CPU_IDLE",
           "fbq-type": null,
           "migration-type": null,
           "group-balance-cpu-sg": null,
@@ -89,12 +88,12 @@
           },
           {
             "cpumask": "0000010000000000",
-            "group-type": null,
-            "sum-h-nr-running": 0,
+            "group-type": "group_fully_busy",
+            "sum-h-nr-running": 1,
             "sum-nr-running": null,
-            "max-capacity": null,
+            "max-capacity": 1024,
             "min-capacity": null,
-            "avg-load": null,
+            "avg-load": 0,
             "asym-prefer-cpu": null,
             "misfit-task-load": null,
             "idle-cpus": null,
@@ -102,12 +101,12 @@
           },
           {
             "cpumask": "0000001000000000",
-            "group-type": null,
-            "sum-h-nr-running": 0,
+            "group-type": "group_fully_busy",
+            "sum-h-nr-running": 1,
             "sum-nr-running": null,
-            "max-capacity": null,
-            "min-capacity": null,
-            "avg-load": null,
+            "max-capacity": 1024,
+            "min-capacity": 1024,
+            "avg-load": 0,
             "asym-prefer-cpu": null,
             "misfit-task-load": null,
             "idle-cpus": null,
@@ -193,10 +192,10 @@
           },
           {
             "cpumask": "0000000000000100",
-            "group-type": "group_fully_busy",
-            "sum-h-nr-running": 1,
+            "group-type": null,
+            "sum-h-nr-running": 0,
             "sum-nr-running": null,
-            "max-capacity": 1024,
+            "max-capacity": null,
             "min-capacity": null,
             "avg-load": null,
             "asym-prefer-cpu": null,
@@ -206,10 +205,10 @@
           },
           {
             "cpumask": "0000000000000010",
-            "group-type": "group_has_spare",
-            "sum-h-nr-running": 1,
+            "group-type": null,
+            "sum-h-nr-running": 0,
             "sum-nr-running": null,
-            "max-capacity": 1024,
+            "max-capacity": null,
             "min-capacity": null,
             "avg-load": null,
             "asym-prefer-cpu": null,
@@ -219,12 +218,12 @@
           },
           {
             "cpumask": "0000000000000001",
-            "group-type": null,
-            "sum-h-nr-running": 0,
+            "group-type": "group_fully_busy",
+            "sum-h-nr-running": 1,
             "sum-nr-running": null,
-            "max-capacity": null,
-            "min-capacity": null,
-            "avg-load": null,
+            "max-capacity": 1024,
+            "min-capacity": 1024,
+            "avg-load": 0,
             "asym-prefer-cpu": null,
             "misfit-task-load": null,
             "idle-cpus": null,
@@ -236,6 +235,7 @@
     "per-cpu-info": [
       {
         "fbq-type": null,
+        "cpu-idle-type": "CPU_IDLE",
         "idle-cpu": true,
         "is-core-idle": true,
         "nr-running": null,
@@ -255,6 +255,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -274,6 +275,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -293,6 +295,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -312,6 +315,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -331,6 +335,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -350,6 +355,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -369,6 +375,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -388,6 +395,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -407,6 +415,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -426,6 +435,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -445,6 +455,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -464,6 +475,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -483,6 +495,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -502,6 +515,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
@@ -521,6 +535,7 @@
       },
       {
         "fbq-type": null,
+        "cpu-idle-type": null,
         "idle-cpu": null,
         "is-core-idle": null,
         "nr-running": null,
