@@ -1,7 +1,6 @@
 #lang rosette/safe
 
 (require "cpu.rkt"
-         "../topology.rkt"
          (only-in racket/base
                   for/list
                   in-string
@@ -131,7 +130,5 @@
             (hidden (hidden-state (list cpu0 cpu1) 2))]
        (check-equal? '() (hidden-get-cpus-by-mask hidden "00")))))))
 
-;; Given a topology, constructs a symbolic variable representing
-;; its hidden state
 (define (construct-hidden-state-var nr-cpus)
   (hidden-state?? nr-cpus))
