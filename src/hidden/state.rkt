@@ -116,13 +116,13 @@
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? (list cpu0) (hidden-get-cpus-by-mask hidden "01"))))
+       (check-equal? (list cpu0) (hidden-get-cpus-by-mask hidden "10"))))
     (test-case
      "check if returning a mask with second value is correct"
      (let* [(cpu0 (hidden-cpu 0 0 0))
             (cpu1 (hidden-cpu 1 1 0))
             (hidden (hidden-state (list cpu0 cpu1) 2))]
-       (check-equal? (list cpu1) (hidden-get-cpus-by-mask hidden "10"))))
+       (check-equal? (list cpu1) (hidden-get-cpus-by-mask hidden "01"))))
     (test-case
      "check if returning a mask with no values is correct"
      (let* [(cpu0 (hidden-cpu 0 0 0))
