@@ -11,4 +11,5 @@
          (struct-out visible-cpu-info)
          read-from-json
          visible-state-nr-cpus
-         visible-state-get-cpu)
+         visible-state-get-cpu
+         visible-did-tasks-move?)

@@ -38,6 +38,7 @@
 
 ;; We should not move a task from src -> dst if there is some other
 ;; core with 2x the load (constant can be adjusted as needed)
+;; If no move happens, then return true.
 (define MOVE-RATIO 2)
 (define (moves-from-busiest hidden visible)
   (define (check-sd sd-info)
@@ -49,7 +50,8 @@
          (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
                 [src-load (hidden-cpu-cpu-load hidden-src-cpu)]
                 [max-load (hidden-max-load hidden)])
-           (>= (* src-load MOVE-RATIO) max-load))]
+           (implies (visible-did-tasks-move? sd-info)
+                    (>= (* src-load MOVE-RATIO) max-load)))]
         [else #t])))
   (andmap check-sd (visible-state-per-sd-info visible)))
 
