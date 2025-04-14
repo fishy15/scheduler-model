@@ -35,7 +35,8 @@
    src-cpu
    prefer-sibling
    sd-share-llc
-   sd-numa))
+   sd-numa
+   nr-tasks-moved))
 
 (define-kw-struct visible-sg-info
   (cpumask

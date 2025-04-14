@@ -41,7 +41,8 @@
    (hash-ref obj 'src-cpu)
    (hash-ref obj 'prefer-sibling)
    (hash-ref obj 'sd-share-llc)
-   (hash-ref obj 'sd-numa)))
+   (hash-ref obj 'sd-numa)
+   (hash-ref obj 'nr-tasks-moved)))
 
 (define (read-all-sg-info obj)
   (map read-sg-info obj))

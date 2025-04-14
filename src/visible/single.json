@@ -21,7 +21,8 @@
           "src-cpu": null,
           "prefer-sibling": null,
           "sd-share-llc": null,
-          "sd-numa": null
+          "sd-numa": null,
+          "nr-tasks-moved": 0
         },
         "groups": [
           {
@@ -80,8 +81,8 @@
             "smt-balance": false,
             "misfit-task-load": false,
             "group-capacity": 1024,
-            "group-util": 14,
-            "group-runnable": 0,
+            "group-util": 8,
+            "group-runnable": 1,
             "group-imbalance": 0
           },
           {
