@@ -32,7 +32,10 @@
    smt-active
    imbalance
    span-weight
-   src-cpu))
+   src-cpu
+   prefer-sibling
+   sd-share-llc
+   sd-numa))
 
 (define-kw-struct visible-sg-info
   (cpumask
@@ -43,9 +46,16 @@
    min-capacity
    avg-load
    asym-prefer-cpu
-   misfit-task-load
    idle-cpus
-   group-balance-cpu))
+   group-balance-cpu
+   group-weight
+   asym-packing
+   smt-balance
+   misfit-task-load
+   group-capacity
+   group-util
+   group-runnable
+   group-imbalance))
 
 (define-kw-struct visible-cpu-info
   (fbq-type
