@@ -41,15 +41,21 @@
         (success (evaluate hidden completed-M) visible)
         #f)))
 
+(define (consistent-cases data)
+  (for/or ([ex-json data])
+    (let ([data (read-from-json ex-json)])
+      (clear-terms!)
+      (check-consistency data))))
+
 (define (solve-cases data invariant)
   (for/or ([ex-json data])
     (let ([data (read-from-json ex-json)])
       (clear-terms!)
-      (or
-       (check-consistency data)
-       (solve-case data invariant)))))
+      (solve-case data invariant))))
 
-(define (solve-from-file file-name invariant)
+(define (solve-from-file file-name invariants)
   (with-input-from-file file-name
     (lambda ()
-      (solve-cases (read-json) invariant))))
+      (let ([data (read-json)])
+        (or (consistent-cases data)
+            (map (lambda (inv) (solve-cases data inv)) invariants))))))
