@@ -13,7 +13,7 @@
          (struct-out inconsistent))
 
 ;; possible results from solve-case
-(struct success (visible hidden) #:transparent)
+(struct success (hidden visible) #:transparent)
 (struct inconsistent (visible) #:transparent)
 
 (define (check-consistency visible)
