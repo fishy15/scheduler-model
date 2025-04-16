@@ -8,6 +8,7 @@
 (displayln (format "FILE: ~a" file))
 
 (define result (solve-from-file file invariants))
+
 (cond
   [(list? result)
    (for ([inv (in-list invariants)]
@@ -15,10 +16,11 @@
      (if (success? res)
          (begin
            (displayln (format "~a: FOUND COUNTEREXAMPLE" inv))
-           (displayln (format "hidden: ~a" (success-hidden res)))
-           (displayln (format "visible: ~a" (success-visible res))))
-         (displayln (format "~a: PASSED"))))]
+           (displayln (format "HIDDEN: ~a" (success-hidden res)))
+           (displayln (format "VISIBLE: ~a" (success-visible res))))
+         (displayln (format "~a: PASSED" inv))))]
   [(inconsistent? result)
    (begin
-     (displayln (format "INCONSISTENCY FOUND"))
-     (displayln (format "visible: ~a" (inconsistent-visible result))))])
+     (displayln "INCONSISTENCY FOUND")
+     (displayln (format "CHECKS: ~a" (inconsistent-checks result)))
+     (displayln (format "VISIBLE: ~a" (inconsistent-visible result))))])

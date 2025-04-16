@@ -3,4 +3,6 @@
 (require "consistency.rkt"
          "invariants.rkt")
 
-(provide valid invariants)
+(provide valid
+         all-checks
+         invariants)

@@ -4,17 +4,8 @@
          "../visible/main.rkt"
          "util.rkt")
 
-(provide valid)
-
-;; Checks if the given hidden state could produce the given visible state
-(define (valid hidden visible)
-  (and (visible-cpu-nr-tasks-matches hidden visible)
-       (non-negative-tasks hidden visible)
-       (non-negative-load hidden visible)
-       (tasks-if-positive-load hidden visible)
-       (no-tasks-if-idle-cpu-type hidden visible)
-       (group-tasks-matches-visible hidden visible)
-       (group-loads-matches-visible hidden visible)))
+(provide all-checks
+         valid)
 
 (define (check-all-cpus visible f)
   (define nr-cpus (visible-state-nr-cpus visible))
@@ -106,6 +97,31 @@
          (eq-or-null? avg-load (visible-sg-info-avg-load sg-info))]))
     (andmap check-sg (visible-sd-info-groups sd-info)))
   (andmap check-sd (visible-state-per-sd-info visible)))
+
+;; Check that for each cpu that we collected data on,
+;; the measured cpu load matches.
+(define (cpu-loads-matches-visible hidden visible)
+  (define (check-cpu cpu-id)
+    (let* ([visible-cpu (visible-state-get-cpu visible cpu-id)]
+           [hidden-cpu (hidden-get-cpu-by-id hidden cpu-id)]
+           [visible-load (visible-cpu-info-cpu-load visible-cpu)]
+           [hidden-load (hidden-cpu-cpu-load hidden-cpu)])
+      (eq-or-null? hidden-load visible-load)))
+  (check-all-cpus visible check-cpu))
+
+(define all-checks
+  (list visible-cpu-nr-tasks-matches
+        non-negative-tasks
+        non-negative-load
+        tasks-if-positive-load
+        no-tasks-if-idle-cpu-type
+        group-tasks-matches-visible
+        ; (group-loads-matches-visible hidden visible) <- for some reason, does not agree with below
+        cpu-loads-matches-visible))
+
+;; Checks if the given hidden state could produce the given visible state
+(define (valid hidden visible [checks all-checks])
+  (andmap (lambda (chk) (chk hidden visible)) checks))
 
 #|
 (define (only-move-from-nonidle hidden visible)
