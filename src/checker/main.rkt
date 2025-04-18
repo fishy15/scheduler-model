@@ -5,4 +5,5 @@
 
 (provide valid
          all-checks
-         invariants)
+         invariants
+         (struct-out invariant))

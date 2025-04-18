@@ -1,10 +1,12 @@
 #lang rosette/safe
 
 (require "../hidden/main.rkt"
-         "../visible/main.rkt"
-         "util.rkt")
+         "../visible/main.rkt")
 
-(provide invariants)
+(provide invariants
+         (struct-out invariant))
+
+(struct invariant (name inv))
 
 #|
 ;; the following functions are "invariants" that the scheduler should always be able to maintain
@@ -58,33 +60,38 @@
 ;; Checks if there exists an overloaded CPU (>= 2 tasks) and dst is idle (0 tasks)
 ;; then the scheduler attempts to make progress by moving some tasks
 ;; from an overloaded CPU to dst.
-(define (overloaded-to-idle hidden visible)
-  (define (moves-to-idle sd-info)
-    (let* ([visible-sd (visible-sd-info-sd sd-info)]
-           [dst-cpu (visible-sd-dst-cpu visible-sd)])
-      (cond
-        [(not (eq? dst-cpu 'null))
-         (let* ([hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
-                [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
-           dst-idle)]
-        [else #f])))
-  (define (moves-idle-to-overloaded sd-info)
-    (let* ([visible-sd (visible-sd-info-sd sd-info)]
-           [src-cpu (visible-sd-src-cpu visible-sd)]
-           [dst-cpu (visible-sd-dst-cpu visible-sd)])
-      (cond
-        [(not (or (eq? src-cpu 'null) (eq? dst-cpu 'null)))
-         (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
-                [hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
-                [src-overloaded (hidden-cpu-overloaded? hidden-src-cpu)]
-                [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
-           (and src-overloaded dst-idle))]
-        [else #f])))
-  (let ([any-overloaded (hidden-any-cpus-overloaded? hidden)]
-        [to-idle (ormap moves-to-idle (visible-state-per-sd-info visible))]
-        [idle-to-overloaded (ormap moves-idle-to-overloaded (visible-state-per-sd-info visible))])
-    (implies (and any-overloaded to-idle)
-             idle-to-overloaded)))
+(define (create-overloaded-to-idle-check this-hidden-overloaded?)
+  (define (overloaded-to-idle hidden visible)
+    (define (moves-to-idle sd-info)
+      (let* ([visible-sd (visible-sd-info-sd sd-info)]
+             [dst-cpu (visible-sd-dst-cpu visible-sd)])
+        (cond
+          [(not (eq? dst-cpu 'null))
+           (let* ([hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
+                  [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
+             dst-idle)]
+          [else #f])))
+    (define (moves-idle-to-overloaded sd-info)
+      (let* ([visible-sd (visible-sd-info-sd sd-info)]
+             [src-cpu (visible-sd-src-cpu visible-sd)]
+             [dst-cpu (visible-sd-dst-cpu visible-sd)])
+        (cond
+          [(not (or (eq? src-cpu 'null) (eq? dst-cpu 'null)))
+           (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
+                  [hidden-dst-cpu (hidden-get-cpu-by-id hidden dst-cpu)]
+                  [src-overloaded (this-hidden-overloaded? hidden-src-cpu)]
+                  [dst-idle (hidden-cpu-idle? hidden-dst-cpu)])
+             (and src-overloaded dst-idle))]
+          [else #f])))
+    (let ([any-overloaded (hidden-any-cpus-overloaded? hidden)]
+          [to-idle (ormap moves-to-idle (visible-state-per-sd-info visible))]
+          [idle-to-overloaded (ormap moves-idle-to-overloaded (visible-state-per-sd-info visible))])
+      (implies (and any-overloaded to-idle)
+               idle-to-overloaded)))
+  overloaded-to-idle)
+
+(define overloaded-to-idle (create-overloaded-to-idle-check hidden-cpu-overloaded?))
+(define overloaded-to-idle-cfs (create-overloaded-to-idle-check hidden-cpu-cfs-overloaded?))
 
 ;; sanity 1 -- any valid assignment fails the check
 (define (sanity _hidden _visible)
@@ -95,8 +102,11 @@
   (define cpu0 (hidden-get-cpu-by-id hidden 0))
   (equal? (hidden-cpu-nr-tasks cpu0) 0))
 
-(define (all-invariants hidden visible)
-  (and (moves-from-busiest hidden visible)
-       (overloaded-to-idle hidden visible)))
+; (define (all-invariants hidden visible)
+;   (and (moves-from-busiest hidden visible)
+;        (overloaded-to-idle hidden visible)))
 
-(define invariants (list moves-from-busiest overloaded-to-idle all-invariants))
+;; Don't use moves-from-busiest --- the relationship between load and tasks is difficult to entangle
+(define invariants
+  (list (invariant "overloaded-to-idle" overloaded-to-idle)
+        (invariant "overloaded-to-idle-cfs" overloaded-to-idle-cfs)))

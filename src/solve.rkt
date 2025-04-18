@@ -66,7 +66,7 @@
 (define (solve-cases blob invariant)
   (for/or ([ex-json blob])
     (let ([ex-data (read-from-json ex-json)])
-      (solve-case ex-data invariant))))
+      (solve-case ex-data (invariant-inv invariant)))))
 
 (define (solve-from-file file-name invariants)
   (define (f dd) (check-inconsistency (read-from-json dd)))

@@ -7,6 +7,7 @@
          (struct-out hidden-state)
          construct-hidden-state-var
          hidden-cpu-overloaded?
+         hidden-cpu-cfs-overloaded?
          hidden-cpu-idle?
          hidden-any-cpus-overloaded?
          hidden-any-cpus-idle?
