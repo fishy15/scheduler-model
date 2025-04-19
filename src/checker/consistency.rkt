@@ -108,6 +108,61 @@
       (eq-or-null? hidden-load visible-load)))
   (check-all-cpus visible check-cpu))
 
+;; Check that for each group that we collected data on,
+;; the measured sum util is the average of the individual utils
+(define (group-utils-matches-visible hidden visible)
+  (define (check-sd sd-info)
+    (define (check-sg sg-info)
+      (define cpumask (visible-sg-info-cpumask sg-info))
+      (cond
+        [(eq? cpumask 'null) #t]
+        [else
+         (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+         (define hidden-total-util (foldr + 0 (map hidden-cpu-cpu-util hidden-cpus)))
+         (eq-or-null? hidden-total-util (visible-sg-info-group-util sg-info))]))
+    (andmap check-sg (visible-sd-info-groups sd-info)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
+
+;; Check that for each group that we collected data on,
+;; the measured sum runnable is the average of the individual runnables
+(define (group-runnables-matches-visible hidden visible)
+  (define (check-sd sd-info)
+    (define (check-sg sg-info)
+      (define cpumask (visible-sg-info-cpumask sg-info))
+      (cond
+        [(eq? cpumask 'null) #t]
+        [else
+         (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+         (define hidden-total-runnable (foldr + 0 (map hidden-cpu-cpu-runnable hidden-cpus)))
+         (eq-or-null? hidden-total-runnable (visible-sg-info-group-runnable sg-info))]))
+    (andmap check-sg (visible-sd-info-groups sd-info)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
+
+;; Check that for each group that we collected data on,
+;; the measured sum capacity is the average of the individual capacities
+(define (group-capacities-matches-visible hidden visible)
+  (define (check-sd sd-info)
+    (define (check-sg sg-info)
+      (define cpumask (visible-sg-info-cpumask sg-info))
+      (cond
+        [(eq? cpumask 'null) #t]
+        [else
+         (define hidden-cpus (hidden-get-cpus-by-mask hidden cpumask))
+         (define hidden-total-capacity (foldr + 0 (map hidden-cpu-cpu-capacity hidden-cpus)))
+         (eq-or-null? hidden-total-capacity (visible-sg-info-group-capacity sg-info))]))
+    (andmap check-sg (visible-sd-info-groups sd-info)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
+
+(define (visible-cpu-imbalance-pct-matches hidden visible)
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
+    (define hidden-imbalance-pct (hidden-cpu-imbalance-pct hidden-cpu))
+    (define visible-cpu (visible-state-get-cpu visible cpu-id))
+    (define visible-imbalance-pct (visible-cpu-info-nr-running visible-cpu))
+    (eq-or-null? hidden-imbalance-pct visible-imbalance-pct))
+  (check-all-cpus visible check-cpu))
+
+
 (define all-checks
   (list visible-cpu-nr-tasks-matches
         non-negative-tasks
@@ -116,7 +171,11 @@
         no-tasks-if-idle-cpu-type
         group-tasks-matches-visible
         ; (group-loads-matches-visible hidden visible) <- for some reason, does not agree with below
-        cpu-loads-matches-visible))
+        cpu-loads-matches-visible
+        group-utils-matches-visible
+        group-runnables-matches-visible
+        group-capacities-matches-visible
+        visible-cpu-imbalance-pct-matches))
 
 ;; Checks if the given hidden state could produce the given visible state
 (define (valid hidden visible [checks all-checks])

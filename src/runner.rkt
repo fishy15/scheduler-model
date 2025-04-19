@@ -8,6 +8,7 @@
 (displayln (format "FILE: ~a" file))
 
 (define result (solve-from-file file invariants))
+(displayln result)
 
 (cond
   [(list? result)
@@ -15,7 +16,7 @@
          [res (in-list result)])
      (if (success? res)
          (begin
-           (displayln (format "~a: FOUND COUNTEREXAMPLE" inv))
+           (displayln (format "~a: FOUND COUNTEREXAMPLE" (success-name res)))
            (displayln (format "HIDDEN: ~a" (success-hidden res)))
            (displayln (format "VISIBLE: ~a" (success-visible res))))
          (displayln (format "~a: PASSED" inv))))]

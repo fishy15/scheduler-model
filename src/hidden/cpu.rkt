@@ -53,7 +53,11 @@
 ;; List symbolic variables in a hidden cpu
 (define (cpu-list-symbolic-vars cpu)
   (list (hidden-cpu-nr-tasks cpu)
-        (hidden-cpu-cpu-load cpu)))
+        (hidden-cpu-cpu-load cpu)
+        (hidden-cpu-cpu-util cpu)
+        (hidden-cpu-cpu-runnable cpu)
+        (hidden-cpu-cpu-capacity cpu)
+        (hidden-cpu-imbalance-pct cpu)))
 
 (module+ test
   (run-tests
