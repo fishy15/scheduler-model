@@ -64,7 +64,8 @@
    group-imbalance))
 
 (define-struct-with-writer visible-cpu-info
-  (fbq-type
+  (cpu-id
+   fbq-type
    cpu-idle-type
    idle-cpu
    is-core-idle

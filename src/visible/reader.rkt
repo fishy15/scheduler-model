@@ -69,10 +69,13 @@
    (hash-ref obj 'group-imbalance)))
 
 (define (read-all-cpu-info obj)
-  (map read-cpu-info obj))
+  (for/list ([i (in-naturals)]
+             [x obj])
+    (read-cpu-info i x)))
 
-(define (read-cpu-info obj)
+(define (read-cpu-info cpu-id obj)
   (visible-cpu-info
+   cpu-id
    (hash-ref obj 'fbq-type)
    (hash-ref obj 'cpu-idle-type)
    (hash-ref obj 'idle-cpu)
