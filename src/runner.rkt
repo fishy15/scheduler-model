@@ -8,7 +8,6 @@
 (displayln (format "FILE: ~a" file))
 
 (define result (solve-from-file file invariants))
-(displayln result)
 
 (cond
   [(list? result)
