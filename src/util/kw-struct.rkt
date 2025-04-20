@@ -1,9 +1,9 @@
-#lang racket/base
+#lang rosette/safe
 
-(require racket/list
-         racket/match
-         racket/struct
-         syntax/parse/define
+(require syntax/parse/define
+         (only-in racket/base string-append)
+         (only-in racket/match match)
+         (only-in racket/list make-list)
          (for-syntax racket/base
                      racket/syntax
                      syntax/parse))
@@ -11,7 +11,8 @@
 (provide define-kw-struct
          define-struct-with-writer
          list->json-string
-         n-tabs)
+         n-tabs
+         define-struct2)
 
 (define (n-tabs n)
   (apply string-append (make-list n "  ")))
@@ -56,3 +57,8 @@
           ...
           (n-tabs level)
           "},\n")]))))
+
+(define-syntax-parse-rule (define-struct2 name (field:id ...))
+  (begin
+    (require (only-in rosette/safe struct))
+    (struct name (field ...) #:transparent)))

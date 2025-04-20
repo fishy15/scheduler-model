@@ -1,25 +1,28 @@
 #lang rosette/safe
 
+(require "../util/kw-struct.rkt")
+
 (module+ test
   (require rackunit
            rackunit/text-ui))
 
 (provide (struct-out hidden-cpu)
+         hidden-cpu->json-string
          hidden-cpu??
          hidden-cpu-overloaded?
          hidden-cpu-cfs-overloaded?
          hidden-cpu-idle?
          cpu-list-symbolic-vars)
 
-(struct hidden-cpu
+(define-struct-with-writer hidden-cpu
   (cpu-id
    nr-tasks
    cpu-load
    cpu-util
    cpu-runnable
    cpu-capacity
-   imbalance-pct)
-  #:transparent)
+   imbalance-pct))
+
 
 ;; Generate a symbolic variable representing a hidden-cpu
 (define (hidden-cpu?? cpu-id)

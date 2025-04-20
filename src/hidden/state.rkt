@@ -6,13 +6,15 @@
                   in-string
                   list->string
                   string->list)
-         (only-in racket/list range))
+         (only-in racket/list range)
+         "../util/kw-struct.rkt")
 
 (module+ test
   (require rackunit
            rackunit/text-ui))
 
 (provide (struct-out hidden-state)
+         hidden-state->json-string
          hidden-total-nr-tasks
          hidden-any-cpus-overloaded?
          hidden-any-cpus-idle?
@@ -24,10 +26,9 @@
          hidden-group-total-load
          construct-hidden-state-var)
 
-(struct hidden-state
+(define-struct-with-writer hidden-state
   (cpus
-   nr-cpus)
-  #:transparent)
+   nr-cpus))
 
 ;; Generate a symbolic variable representing a hidden-state
 (define (hidden-state?? nr-cpus)

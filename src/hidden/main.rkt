@@ -1,6 +1,7 @@
 #lang rosette/safe
 
 (require "cpu.rkt"
+         "display.rkt"
          "state.rkt")
 
 (provide (struct-out hidden-cpu)
@@ -17,5 +18,6 @@
          hidden-get-cpus-by-mask
          hidden-group-total-nr-tasks
          hidden-group-total-load
-         hidden-total-nr-tasks)
+         hidden-total-nr-tasks
+         hidden->json-string)
 
