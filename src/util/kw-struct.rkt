@@ -10,10 +10,22 @@
 
 (provide define-kw-struct
          define-struct-with-writer
+         list->json-string
          n-tabs)
 
 (define (n-tabs n)
   (apply string-append (make-list n "  ")))
+
+(define (list->json-string lst level writer)
+  (define (conv-item item)
+    (string-append (n-tabs (+ level 1))
+                   (writer item (+ level 1))))
+  (define converted-items (map conv-item lst))
+  (define args (append (list "[\n")
+                       converted-items
+                       (list (n-tabs level) "],\n")))
+  (apply string-append args))
+
 
 (define-syntax-parse-rule (define-kw-struct name (field:id ...))
   #:with (field: ...) (map (lambda (fld) (format-symbol "~a:" (syntax-e fld))) (attribute field))
@@ -30,7 +42,7 @@
 
 (define-syntax-parse-rule (define-struct-with-writer name (field:id ...))
   #:with (field: ...) (map (lambda (fld) (format-symbol "\"~a\": " (syntax-e fld))) (attribute field))
-  #:with writer-name (format-id #'name "~a->string" (syntax-e #'name))
+  #:with writer-name (format-id #'name "~a->json-string" (syntax-e #'name))
   (begin
     (struct name (field ...) #:transparent)
     (define (writer-name obj level writer)

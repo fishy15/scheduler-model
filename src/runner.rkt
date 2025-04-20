@@ -18,7 +18,7 @@
          (begin
            (displayln (format "~a: FOUND COUNTEREXAMPLE" (success-name res)))
            (displayln (format "HIDDEN: ~a" (success-hidden res)))
-           (displayln (format "VISIBLE: ~a" (visible->string (success-visible res)))))
+           (displayln (format "VISIBLE: ~a" (visible->json-string (success-visible res)))))
          (displayln (format "~a: PASSED" inv))))]
   [(inconsistent? result)
    (begin

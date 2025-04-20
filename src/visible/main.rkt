@@ -14,4 +14,4 @@
          visible-state-nr-cpus
          visible-state-get-cpu
          visible-did-tasks-move?
-         visible->string)
+         visible->json-string)

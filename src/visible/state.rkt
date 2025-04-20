@@ -3,15 +3,15 @@
 (require "../util/kw-struct.rkt")
 
 (provide (struct-out visible-state)
-         visible-state->string
+         visible-state->json-string
          (struct-out visible-sd-info)
-         visible-sd-info->string
+         visible-sd-info->json-string
          (struct-out visible-sd)
-         visible-sd->string
+         visible-sd->json-string
          (struct-out visible-sg-info)
-         visible-sg-info->string
+         visible-sg-info->json-string
          (struct-out visible-cpu-info)
-         visible-cpu-info->string)
+         visible-cpu-info->json-string)
 
 (define-struct-with-writer visible-state
   (per-sd-info
