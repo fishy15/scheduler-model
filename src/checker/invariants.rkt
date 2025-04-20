@@ -39,7 +39,7 @@
 |#
 
 ;; We should not move a task from src -> dst if there is some other
-;; core with 2x the load (constant can be adjusted as needed)
+;; core with 2x the util (constant can be adjusted as needed)
 ;; If no move happens, then return true.
 (define MOVE-RATIO 2)
 (define (moves-from-busiest hidden visible)
@@ -50,10 +50,10 @@
       (cond
         [(not (or (eq? src-cpu 'null) (eq? dst-cpu 'null)))
          (let* ([hidden-src-cpu (hidden-get-cpu-by-id hidden src-cpu)]
-                [src-load (hidden-cpu-cpu-load hidden-src-cpu)]
-                [max-load (hidden-max-load hidden)])
+                [src-util (hidden-cpu-cpu-util hidden-src-cpu)]
+                [max-util (hidden-max-util hidden)])
            (implies (visible-did-tasks-move? sd-info)
-                    (>= (* src-load MOVE-RATIO) max-load)))]
+                    (>= (* src-util MOVE-RATIO) max-util)))]
         [else #t])))
   (andmap check-sd (visible-state-per-sd-info visible)))
 
@@ -108,5 +108,6 @@
 
 ;; Don't use moves-from-busiest --- the relationship between load and tasks is difficult to entangle
 (define invariants
-  (list (invariant "overloaded-to-idle" overloaded-to-idle)
+  (list (invariant "moves-from-busiest" moves-from-busiest)
+        (invariant "overloaded-to-idle" overloaded-to-idle)
         (invariant "overloaded-to-idle-cfs" overloaded-to-idle-cfs)))

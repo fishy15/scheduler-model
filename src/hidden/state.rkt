@@ -20,6 +20,7 @@
          hidden-any-cpus-idle?
          hidden-get-cpu-by-id
          hidden-max-load
+         hidden-max-util
          list-symbolic-vars
          hidden-get-cpus-by-mask
          hidden-group-total-nr-tasks
@@ -66,6 +67,13 @@
   (define cpus (hidden-state-cpus state))
   (apply max (map hidden-cpu-cpu-load cpus)))
 
+;; Returns the max util on any of the CPUs
+(define (hidden-max-util state)
+  (define cpus (hidden-state-cpus state))
+  (apply max (map hidden-cpu-cpu-util cpus)))
+
+;; Returns a list of all the symbolic vars used to construct this state.
+;; Used to ensure that every symbolic var is assigned a value.
 (define (list-symbolic-vars hidden)
   (apply append (map cpu-list-symbolic-vars (hidden-state-cpus hidden))))
 

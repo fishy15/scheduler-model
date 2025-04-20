@@ -14,6 +14,7 @@
          hidden-any-cpus-idle?
          hidden-get-cpu-by-id
          hidden-max-load
+         hidden-max-util
          list-symbolic-vars
          hidden-get-cpus-by-mask
          hidden-group-total-nr-tasks
