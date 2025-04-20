@@ -1,8 +1,9 @@
 #lang racket/base
 
-(require "reader.rkt"
-         "state.rkt"
-         "methods.rkt")
+(require "display.rkt"
+         "methods.rkt"
+         "reader.rkt"
+         "state.rkt")
 
 (provide (struct-out visible-state)
          (struct-out visible-sd-info)
@@ -12,4 +13,5 @@
          read-from-json
          visible-state-nr-cpus
          visible-state-get-cpu
-         visible-did-tasks-move?)
+         visible-did-tasks-move?
+         visible->string)

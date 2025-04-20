@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require "solve.rkt"
-         "checker/main.rkt")
+         "checker/main.rkt"
+         "visible/main.rkt")
 
 (define file (vector-ref (current-command-line-arguments) 0))
 
@@ -17,7 +18,7 @@
          (begin
            (displayln (format "~a: FOUND COUNTEREXAMPLE" (success-name res)))
            (displayln (format "HIDDEN: ~a" (success-hidden res)))
-           (displayln (format "VISIBLE: ~a" (success-visible res))))
+           (displayln (format "VISIBLE: ~a" (visible->string (success-visible res)))))
          (displayln (format "~a: PASSED" inv))))]
   [(inconsistent? result)
    (begin

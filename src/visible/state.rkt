@@ -3,20 +3,25 @@
 (require "../util/kw-struct.rkt")
 
 (provide (struct-out visible-state)
+         visible-state->string
          (struct-out visible-sd-info)
+         visible-sd-info->string
          (struct-out visible-sd)
+         visible-sd->string
          (struct-out visible-sg-info)
-         (struct-out visible-cpu-info))
+         visible-sg-info->string
+         (struct-out visible-cpu-info)
+         visible-cpu-info->string)
 
-(define-kw-struct visible-state
+(define-struct-with-writer visible-state
   (per-sd-info
    per-cpu-info))
 
-(define-kw-struct visible-sd-info
+(define-struct-with-writer visible-sd-info
   (sd
    groups))
 
-(define-kw-struct visible-sd
+(define-struct-with-writer visible-sd
   (dst-cpu
    cpumask
    fbq-type
@@ -38,7 +43,7 @@
    sd-numa
    nr-tasks-moved))
 
-(define-kw-struct visible-sg-info
+(define-struct-with-writer visible-sg-info
   (cpumask
    group-type
    sum-h-nr-running
@@ -58,7 +63,7 @@
    group-runnable
    group-imbalance))
 
-(define-kw-struct visible-cpu-info
+(define-struct-with-writer visible-cpu-info
   (fbq-type
    cpu-idle-type
    idle-cpu
