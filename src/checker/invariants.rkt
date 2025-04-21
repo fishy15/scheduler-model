@@ -1,6 +1,7 @@
 #lang rosette/safe
 
-(require "../hidden/main.rkt"
+(require (only-in racket/match match)
+         "../hidden/main.rkt"
          "../visible/main.rkt")
 
 (provide invariants
@@ -37,6 +38,30 @@
   ;; return false if all sd returned true
   (not (and theres-enough-work all-idle-after-balance)))
 |#
+
+;; If there are more tasks cores, then we want distribute tasks
+(define (right-to-work hidden visible)
+  (define (check-sd sd-info)
+    (let* ([visible-sd (visible-sd-info-sd sd-info)]
+           [src-cpu (visible-sd-src-cpu visible-sd)]
+           [dst-cpu (visible-sd-dst-cpu visible-sd)]
+           [tasks-moved
+            (match (visible-sd-nr-tasks-moved visible-sd)
+              ['null 0]
+              [x x])]
+           [hidden-cpus (hidden-state-cpus hidden)]
+           [hidden-old-has-tasks (lambda (cpu) (> (hidden-cpu-nr-tasks cpu) 0))]
+           [old-cpus-with-tasks (length (filter hidden-old-has-tasks hidden-cpus))]
+           [hidden-new-has-tasks
+            (lambda (cpu)
+              (let ([nr-tasks (hidden-cpu-nr-tasks cpu)])
+                (match cpu
+                  [src-cpu (> (- nr-tasks tasks-moved) 0)]
+                  [dst-cpu (> (+ nr-tasks tasks-moved) 0)]
+                  [_ (> tasks-moved 0)])))]
+           [new-cpus-with-tasks (length (filter hidden-new-has-tasks hidden-cpus))])
+      (<= old-cpus-with-tasks new-cpus-with-tasks)))
+  (andmap check-sd (visible-state-per-sd-info visible)))
 
 ;; We should not move a task from src -> dst if there is some other
 ;; core with 2x the util (constant can be adjusted as needed)
@@ -108,6 +133,7 @@
 
 ;; Don't use moves-from-busiest --- the relationship between load and tasks is difficult to entangle
 (define invariants
-  (list (invariant "moves-from-busiest" moves-from-busiest)
+  (list (invariant "right-to-work" right-to-work)
+        (invariant "moves-from-busiest" moves-from-busiest)
         (invariant "overloaded-to-idle" overloaded-to-idle)
         (invariant "overloaded-to-idle-cfs" overloaded-to-idle-cfs)))
