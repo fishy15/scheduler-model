@@ -13,10 +13,14 @@
       (let ([inv-name (vector-ref argv 1)])
         (filter (lambda (inv) (equal? (invariant-name inv) inv-name)) invariants))
       invariants))
+(define skip-inconsistency-check
+  (if (> (vector-length argv) 2)
+      (eq? "skip" (vector-ref argv 2))
+      #f))
 
 (displayln (format "FILE: ~a" file))
 
-(define result (solve-from-file file chosen-invariants))
+(define result (solve-from-file file chosen-invariants skip-inconsistency-check))
 
 (cond
   [(list? result)
