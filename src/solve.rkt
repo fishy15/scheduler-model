@@ -70,12 +70,23 @@
     (let ([ex-data (read-from-json ex-json)])
       (solve-case ex-data invariant))))
 
-(define (solve-from-file file-name invariants [skip-inconsistency-check #f])
+;; runs on every case and then returns the first one that works
+;; for benchmarking purposes
+(define (solve-cases-slow blob invariant)
+  (define (check-ex ex-json)
+    (let ([ex-data (read-from-json ex-json)])
+      (solve-case ex-data invariant)))
+  (define data
+    (time (map check-ex blob)))
+  (displayln (length data))
+  #f) ;; ignore output
+
+(define (solve-from-file file-name invariants [benchmarking #f])
   (with-input-from-file file-name
     (lambda ()
       (let* ([data (read-json)]
              [no-null-data (filter (lambda (o) (not (eq? 'null o))) data)])
-        (if skip-inconsistency-check
-            (map (lambda (inv) (solve-cases no-null-data inv)) invariants)
+        (if benchmarking
+            (map (lambda (inv) (solve-cases-slow no-null-data inv)) invariants)
             (or (inconsistent-cases no-null-data)
                 (map (lambda (inv) (solve-cases no-null-data inv)) invariants)))))))

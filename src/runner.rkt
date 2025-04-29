@@ -13,14 +13,14 @@
       (let ([inv-name (vector-ref argv 1)])
         (filter (lambda (inv) (equal? (invariant-name inv) inv-name)) invariants))
       invariants))
-(define skip-inconsistency-check
+(define benchmarking
   (if (> (vector-length argv) 2)
-      (eq? "skip" (vector-ref argv 2))
+      (equal? "bench" (vector-ref argv 2))
       #f))
 
 (displayln (format "FILE: ~a" file))
 
-(define result (solve-from-file file chosen-invariants skip-inconsistency-check))
+(define result (solve-from-file file chosen-invariants benchmarking))
 
 (cond
   [(list? result)
@@ -31,7 +31,7 @@
            (displayln (format "~a: FOUND COUNTEREXAMPLE" (success-name res)))
            (displayln (format "HIDDEN: ~a" (hidden->json-string (success-hidden res))))
            (displayln (format "VISIBLE: ~a" (visible->json-string (success-visible res)))))
-         (displayln (format "~a: PASSED" inv))))]
+         (displayln (format "~a: PASSED" (invariant-name inv)))))]
   [(inconsistent? result)
    (begin
      (displayln "INCONSISTENCY FOUND")
