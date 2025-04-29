@@ -5,11 +5,18 @@
          "hidden/main.rkt"
          "visible/main.rkt")
 
-(define file (vector-ref (current-command-line-arguments) 0))
+(define argv (current-command-line-arguments))
+
+(define file (vector-ref argv 0))
+(define chosen-invariants
+  (if (> (vector-length argv) 1)
+      (let ([inv-name (vector-ref argv 1)])
+        (filter (lambda (inv) (equal? (invariant-name inv) inv-name)) invariants))
+      invariants))
 
 (displayln (format "FILE: ~a" file))
 
-(define result (solve-from-file file invariants))
+(define result (solve-from-file file chosen-invariants))
 
 (cond
   [(list? result)
