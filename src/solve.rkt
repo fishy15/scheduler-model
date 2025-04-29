@@ -71,9 +71,9 @@
       (solve-case ex-data invariant))))
 
 (define (solve-from-file file-name invariants)
-  (define (f dd) (check-inconsistency (read-from-json dd)))
   (with-input-from-file file-name
     (lambda ()
-      (let ([data (read-json)])
-        (or (inconsistent-cases data)
-            (map (lambda (inv) (solve-cases data inv)) invariants))))))
+      (let* ([data (read-json)]
+             [no-null-data (filter (lambda (o) (not (eq? 'null o))) data)])
+        (or (inconsistent-cases no-null-data)
+            (map (lambda (inv) (solve-cases no-null-data inv)) invariants))))))
