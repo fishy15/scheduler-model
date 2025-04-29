@@ -11,3 +11,6 @@ compiled/
 .vscode/*
 .history/
 *.vsix
+
+data/
+src/runner
