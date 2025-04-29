@@ -14,6 +14,6 @@ invs=(
 for inv in "${invs[@]}"; do
     for f in data/*; do
         echo "$inv --- $f"
-        time src/runner "$f" "$inv" > /dev/null
+        src/runner "$f" "$inv" bench
     done
 done
