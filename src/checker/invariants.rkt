@@ -58,11 +58,12 @@
            [old-cpus-with-tasks (length (filter hidden-old-has-tasks hidden-cpus))]
            [hidden-new-has-tasks
             (lambda (cpu)
-              (let ([nr-tasks (hidden-cpu-nr-tasks cpu)])
-                (match cpu
-                  [src-cpu (> (- nr-tasks tasks-moved) 0)]
-                  [dst-cpu (> (+ nr-tasks tasks-moved) 0)]
-                  [_ (> tasks-moved 0)])))]
+              (let ([nr-tasks (hidden-cpu-nr-tasks cpu)]
+                    [cpu-id (hidden-cpu-cpu-id cpu)])
+                (cond
+                  [(eq? cpu-id src-cpu) (> (- nr-tasks tasks-moved) 0)]
+                  [(eq? cpu-id dst-cpu) (> (+ nr-tasks tasks-moved) 0)]
+                  [else (> nr-tasks 0)])))]
            [new-cpus-with-tasks (length (filter hidden-new-has-tasks hidden-cpus))])
       ;; run the check if we ignore-swb value or should-we-balance is set
       (implies (or ignore-swb should-we-balance)
