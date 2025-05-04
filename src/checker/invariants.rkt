@@ -39,6 +39,12 @@
   (not (and theres-enough-work all-idle-after-balance)))
 |#
 
+(define (count-matches f xs)
+ (if (null? xs)
+     0
+     (+ (if (f (car xs)) 1 0)
+        (count-matches f (cdr xs)))))
+
 ;; If there are more tasks cores, then we want distribute tasks
 (define (right-to-work hidden visible [ignore-swb #t])
   (define (check-sd sd-info)
@@ -55,7 +61,7 @@
               [x x])]
            [hidden-cpus (hidden-state-cpus hidden)]
            [hidden-old-has-tasks (lambda (cpu) (> (hidden-cpu-nr-tasks cpu) 0))]
-           [old-cpus-with-tasks (length (filter hidden-old-has-tasks hidden-cpus))]
+           [old-cpus-with-tasks (count-matches hidden-old-has-tasks hidden-cpus)]
            [hidden-new-has-tasks
             (lambda (cpu)
               (let ([nr-tasks (hidden-cpu-nr-tasks cpu)]
@@ -64,7 +70,7 @@
                   [(eq? cpu-id src-cpu) (> (- nr-tasks tasks-moved) 0)]
                   [(eq? cpu-id dst-cpu) (> (+ nr-tasks tasks-moved) 0)]
                   [else (> nr-tasks 0)])))]
-           [new-cpus-with-tasks (length (filter hidden-new-has-tasks hidden-cpus))])
+           [new-cpus-with-tasks (count-matches hidden-new-has-tasks hidden-cpus)])
       ;; run the check if we ignore-swb value or should-we-balance is set
       (implies (or ignore-swb should-we-balance)
                (<= old-cpus-with-tasks new-cpus-with-tasks))))
