@@ -19,6 +19,9 @@ can be generated using the `munch` subsystem in [this fork of the kernel](https:
 and it is just a list of multiple instances of load balancing,
 with the information used by the kernel specified
 or `'null` if that information was never observed.
+[This CloudLab profile](https://github.com/fishy15/cfs-testing-cloudlab-profile)
+helps set up the environment for collecting data from the kernel.
+
 To run against a single invariant,
 run `racket src/runner.rkt <json-file> <invariant-name>`,
 where the name is specified in `./src/checker/invariants.rkt`.
@@ -49,10 +52,14 @@ VISIBLE: {
 ...
 ```
 
-Other outputs are
+If it passes the initial consistency check,
+it then tries to synthesize a hidden state
+that is consistent with all the consistency checks
+but breaks some invariant.
+This can either output
 `PASSED`,
-which means that no counterexamples were found,
-and `FOUND COUNTEREXAMPLE`,
+which means that no counterexamples were found;
+or `FOUND COUNTEREXAMPLE`,
 which prints the visible state and the generated hidden state
 that produced a counterexample.
 
