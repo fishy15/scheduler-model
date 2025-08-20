@@ -52,6 +52,16 @@
              (> hidden-load 0)))
   (check-all-cpus visible check-cpu))
 
+;; We have tasks iff we have positive util
+(define (tasks-iff-positive-util hidden visible)
+  (define (check-cpu cpu-id)
+    (define hidden-cpu (hidden-get-cpu-by-id hidden cpu-id))
+    (define hidden-nr-tasks (hidden-cpu-nr-tasks hidden-cpu))
+    (define hidden-util (hidden-cpu-cpu-util hidden-cpu))
+    (eq? (> hidden-nr-tasks 0)
+         (> hidden-util 0)))
+  (check-all-cpus visible check-cpu))
+
 ;; If the cpu idle type we used was CPU_IDLE,
 ;; then there must be zero tasks on the rq.
 (define (no-tasks-if-idle-cpu-type hidden visible)
@@ -172,6 +182,7 @@
         group-tasks-matches-visible
         ; (group-loads-matches-visible hidden visible) <- for some reason, does not agree with below
         cpu-loads-matches-visible
+        tasks-iff-positive-util
         group-utils-matches-visible
         group-runnables-matches-visible
         group-capacities-matches-visible
